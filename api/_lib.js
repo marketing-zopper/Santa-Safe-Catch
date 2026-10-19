@@ -75,9 +75,9 @@ const clip = (v, n) => (v == null ? null : String(v).trim().slice(0, n) || null)
 const num = (v, lo, hi) => { const x = Number(v); return Number.isFinite(x) && x >= lo && x <= hi ? x : null; };
 
 function requireAdmin(req) {
-  const want = process.env.ADMIN_PASSWORD;
+  const want = (process.env.ADMIN_PASSWORD || '').trim().replace(/^["']|["']$/g, '');
   if (!want) throw httpError(500, 'Server is not configured (ADMIN_PASSWORD missing)');
-  const got = String(req.headers['x-admin-key'] || '');
+  const got = String(req.headers['x-admin-key'] || '').trim();
   const a = crypto.createHash('sha256').update(got).digest(), b = crypto.createHash('sha256').update(want).digest();
   if (!crypto.timingSafeEqual(a, b)) throw httpError(401, 'Wrong password');
 }
