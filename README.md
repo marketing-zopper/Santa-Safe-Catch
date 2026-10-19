@@ -1,6 +1,6 @@
 # Santa's Safe Catch · Zopper Christmas
 
-In-store phone game: customers scan a QR, swipe to move Santa and catch falling phones in his big bucket.
+In-store phone game: customers scan a QR, swipe to move Santa and catch falling phones in his big red sack.
 No login. 3 lives (drop a phone or catch coal = lose a life; Zopper shield = +1 life). Speed ramps up until it's impossible to keep up.
 
 ## Files
