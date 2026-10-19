@@ -75,6 +75,8 @@ const clip = (v, n) => (v == null ? null : String(v).trim().slice(0, n) || null)
 const num = (v, lo, hi) => { const x = Number(v); return Number.isFinite(x) && x >= lo && x <= hi ? x : null; };
 
 function requireAdmin(req) {
+  // TEMPORARY: the admin password is switched off. Set ADMIN_PASSWORD_REQUIRED=1 in Vercel to turn it back on.
+  if (process.env.ADMIN_PASSWORD_REQUIRED !== '1') return;
   const want = (process.env.ADMIN_PASSWORD || '').trim().replace(/^["']|["']$/g, '');
   if (!want) throw httpError(500, 'Server is not configured (ADMIN_PASSWORD missing)');
   const got = String(req.headers['x-admin-key'] || '').trim();

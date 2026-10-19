@@ -114,7 +114,7 @@ a{color:var(--brand);font-weight:700}
     <h1>Santa's Safe Catch<small>Admin</small></h1>
     <span class="updated" id="updated"></span>
     <button class="btn ghost" id="refreshBtn">Refresh</button>
-    <button class="btn ghost" id="logoutBtn">Sign out</button>
+    <button class="btn ghost" id="logoutBtn" hidden>Sign out</button>
   </div></header>
 
   <main class="wrap">
@@ -164,7 +164,7 @@ async function call(qs, opts) {
 
 /* ---------- login ---------- */
 $('loginForm').addEventListener('submit', async e => {
-  e.preventDefault(); key = $('pw').value; $('loginErr').hidden = true;
+  e.preventDefault(); key = $('pw').value.trim(); $('loginErr').hidden = true;
   try { await call('action=stats'); ss.set('ssc-admin', key); boot(); }
   catch (er) { if (er.message !== 'auth') { $('loginErr').textContent = er.message; $('loginErr').hidden = false; } }
 });
@@ -303,7 +303,8 @@ function boot() {
   loadStats().catch(() => {}); loadTable().catch(() => {});
   clearInterval(timer); timer = setInterval(() => { if (!document.hidden && key) { loadStats().catch(() => {}); } }, 60000);
 }
-if (key) boot();
+// Open straight away when the server doesn't ask for a password
+(async () => { try { const r = await fetch('/api/admin?action=stats', { headers: { 'x-admin-key': key || '' } }); if (r.ok) { key = key || ''; boot(); } } catch (e) {} })();
 })();
 </script>
 </body>

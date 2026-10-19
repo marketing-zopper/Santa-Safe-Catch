@@ -9,7 +9,7 @@ module.exports = handler(['GET'], async (req, res) => {
     const u = new URL(raw.trim().replace(/^["']|["']$/g, ''));
     const pw = decodeURIComponent(u.password);
     out.protocol = u.protocol; out.host = u.hostname; out.port = u.port; out.user = decodeURIComponent(u.username); out.database = u.pathname;
-    out.passwordLength = pw.length;
+    out.passwordLength = pw.length ? (pw.length < 8 ? 'short' : 'ok') : 'empty';
     out.passwordLooksLikePlaceholder = /YOUR|NEWPASSWORD|\[|\]/.test(pw);
     out.passwordHasSymbols = /[^A-Za-z0-9]/.test(pw);
   } catch (e) { out.parseError = 'DATABASE_URL is not a valid URL'; }
