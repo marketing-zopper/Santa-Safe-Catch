@@ -214,6 +214,51 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
 .result .r-rank small{font-size:16px;color:#4A4C78;margin-left:4px}
 .result .r-sub{font-size:14px;font-weight:700;line-height:1.35}
 .toast{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:14px;padding:10px 16px;font-weight:700;font-size:14px;max-width:calc(100% - 32px);text-align:center;z-index:9;pointer-events:none;animation:rise .3s}
+/* ---------- Sign-up sheet (festive) ---------- */
+.reg-panel{padding:0;gap:0;overflow-x:hidden;background:var(--almond)}
+.reg-head{flex:none;position:relative;overflow:hidden;color:#fff;padding:22px 20px 30px;
+  background:radial-gradient(circle at 12% 30%,rgba(255,255,255,.9) 0 1.2px,transparent 1.6px) 0 0/46px 38px,
+             radial-gradient(circle at 70% 60%,rgba(255,255,255,.6) 0 1px,transparent 1.4px) 0 0/34px 30px,
+             linear-gradient(160deg,#263E91 0%,#1D1E3F 75%)}
+.reg-head::after{content:"";position:absolute;z-index:2;left:-5%;right:-5%;bottom:-1px;height:22px;background:var(--almond);
+  -webkit-mask:radial-gradient(22px 14px at 50% 100%,#000 98%,transparent) 0 0/44px 22px repeat-x;mask:radial-gradient(22px 14px at 50% 100%,#000 98%,transparent) 0 0/44px 22px repeat-x}
+.reg-head .sheet-x{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.6);color:#fff;z-index:3}
+.reg-santa{position:absolute;right:-6px;bottom:4px;width:140px;height:156px;overflow:hidden;z-index:1;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 34%);mask-image:linear-gradient(90deg,transparent 0,#000 34%)}
+.reg-santa img{position:absolute;right:-8px;top:4px;height:196px;width:auto;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));animation:peek 3.2s ease-in-out infinite}
+@keyframes peek{50%{transform:translateY(5px) rotate(-2deg)}}
+.reg-kicker{position:relative;z-index:2;display:inline-block;font-family:var(--font-display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);border:1.5px solid var(--cyan);border-radius:999px;padding:4px 10px 2px}
+.reg-panel .reg-title{position:relative;z-index:2;margin:10px 0 0;font-family:var(--font-display);font-weight:400;font-size:30px;line-height:.95;color:#fff;max-width:62%;text-shadow:0 3px 0 rgba(0,0,0,.25)}
+.reg-panel .reg-title span{display:block;font-size:44px;color:var(--lemon);text-shadow:2px 0 0 var(--ink),-2px 0 0 var(--ink),0 2px 0 var(--ink),0 -2px 0 var(--ink),0 5px 0 var(--orange),0 7px 0 var(--ink)}
+.reg-perks{position:relative;z-index:2;list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;max-width:64%}
+.reg-perks li{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--almond)}
+.reg-perks svg{width:18px;height:18px;flex:none;color:var(--lemon)}
+.reg-form{flex:none;display:flex;flex-direction:column;gap:12px;padding:8px 20px calc(18px + env(safe-area-inset-bottom,0px))}
+.rfield{display:flex;flex-direction:column;gap:5px}
+.rlbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#4A4C78}
+.rwrap{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:0 12px;box-shadow:0 4px 0 var(--ink);transition:box-shadow .15s,transform .15s,border-color .15s}
+.rwrap>svg{width:20px;height:20px;flex:none;color:#9AA0C8;transition:color .15s}
+.rwrap input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:700 17px var(--font-body);color:var(--ink);padding:12px 0 11px}
+.rwrap input::placeholder{color:#B4B8D6;font-weight:600}
+.rwrap:focus-within{border-color:var(--cyan);box-shadow:0 4px 0 var(--cyan),0 0 0 4px rgba(0,181,234,.18);transform:translateY(-1px)}
+.rwrap:focus-within>svg{color:var(--cyan)}
+.rwrap:has(input[aria-invalid="true"]){border-color:var(--berry);box-shadow:0 4px 0 var(--berry)}
+.cc{display:flex;align-items:center;gap:6px;font-weight:800;font-size:15px;color:var(--ink);padding-right:10px;border-right:2px solid #E3E5F1}
+.cc svg{width:22px;height:15px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.rcheck{display:flex;gap:10px;align-items:flex-start;cursor:pointer;margin-top:2px}
+.rcheck input{position:absolute;opacity:0;width:1px;height:1px}
+.rcheck .box{flex:none;width:24px;height:24px;border:3px solid var(--ink);border-radius:8px;background:#fff;display:grid;place-items:center;margin-top:1px;transition:background .15s}
+.rcheck .box svg{width:16px;height:16px;opacity:0;transform:scale(.4);transition:opacity .15s,transform .2s cubic-bezier(.2,.9,.3,1.6)}
+.rcheck input:checked+.box{background:var(--orange)}
+.rcheck input:checked+.box svg{opacity:1;transform:none}
+.rcheck input:focus-visible+.box{outline:3px solid var(--cyan);outline-offset:2px}
+.rcheck .txt{font-size:13px;font-weight:600;line-height:1.38;color:#3A3C66}
+.play-btn.reg-go{width:100%;height:64px;font-size:clamp(20px,6.6vw,28px);white-space:nowrap;animation:none;margin-top:4px}
+.play-btn.reg-go svg{width:28px;height:28px}
+.play-btn.reg-go[disabled]{opacity:.85;pointer-events:none}
+.play-btn.reg-go[disabled]::after{animation-duration:1.2s}
+.reg-note{margin:0;display:flex;gap:8px;align-items:flex-start;font-size:12.5px;font-weight:600;line-height:1.38;color:#5C5E88}
+.reg-note svg{width:18px;height:18px;flex:none;color:var(--berry);margin-top:1px}
+@media (max-height:700px){.reg-head{padding:16px 18px 24px}.reg-panel .reg-title span{font-size:36px}.reg-perks{display:none}.reg-santa{height:120px;width:110px}.reg-santa img{height:160px}}
 </style>
 </head>
 <body>
@@ -298,18 +343,28 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
 
   <!-- Sign-up sheet -->
   <div class="sheet" id="regSheet" hidden>
-    <div class="sheet-panel" role="dialog" aria-labelledby="regTitle">
-      <button class="sheet-x" data-close aria-label="Close">×</button>
-      <h2 id="regTitle">Join the challenge</h2>
-      <p class="sheet-lead">Your best score goes on the leaderboard. Top players win prizes when the campaign ends.</p>
-      <form id="regForm" novalidate>
-        <label class="field"><span>Your name</span><input id="regName" name="name" autocomplete="name" maxlength="60" required placeholder="e.g. Rahul Sharma"></label>
-        <label class="field"><span>Email</span><input id="regEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required placeholder="you@example.com"></label>
-        <label class="field"><span>Mobile number</span><span class="tel"><i>+91</i><input id="regPhone" name="phone" type="tel" autocomplete="tel-national" inputmode="numeric" maxlength="10" required placeholder="10-digit number"></span></label>
-        <label class="check"><input id="regConsent" type="checkbox" required><span>I agree that Zopper may store my name, email, mobile number, scores and location to run this contest and contact me about it.</span></label>
+    <div class="sheet-panel reg-panel" role="dialog" aria-labelledby="regTitle">
+      <div class="reg-head">
+        <div class="reg-santa" aria-hidden="true"><img id="regSantaImg" alt=""></div>
+        <button class="sheet-x" data-close aria-label="Close">×</button>
+        <div class="reg-kicker">Zopper Christmas Challenge</div>
+        <h2 class="reg-title" id="regTitle">Join the<span>challenge</span></h2>
+        <ul class="reg-perks">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v3h3v2a5 5 0 0 1-5 5h-.3A5 5 0 0 1 13 15.6V18h3v3H8v-3h3v-2.4A5 5 0 0 1 9.3 13H9a5 5 0 0 1-5-5V6h3zm-1 5a3 3 0 0 0 2 2.8V8zm12 0h-1v2.8A3 3 0 0 0 18 8z" fill="currentColor"/></svg>Top scorers win prizes</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 0 7.7 10h-2.1A6 6 0 1 1 12 6c1.7 0 3.1.7 4.2 1.8L13 11h7V4l-2.4 2.4A8 8 0 0 0 12 4z" fill="currentColor"/></svg>Play as often as you like</li>
+        </ul>
+      </div>
+      <form id="regForm" class="reg-form" novalidate>
+        <label class="rfield"><span class="rlbl">Your name</span>
+          <span class="rwrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21a8 8 0 0 1 16 0z" fill="currentColor"/></svg><input id="regName" name="name" autocomplete="name" maxlength="60" required placeholder="Rahul Sharma"></span></label>
+        <label class="rfield"><span class="rlbl">Email</span>
+          <span class="rwrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3" fill="currentColor"/><path d="M4.5 7.5l7.5 5.5 7.5-5.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><input id="regEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required placeholder="you@example.com"></span></label>
+        <label class="rfield"><span class="rlbl">Mobile number</span>
+          <span class="rwrap"><span class="cc"><svg viewBox="0 0 24 16" aria-hidden="true"><rect width="24" height="5.33" fill="#FF9933"/><rect y="5.33" width="24" height="5.34" fill="#fff"/><rect y="10.67" width="24" height="5.33" fill="#138808"/><circle cx="12" cy="8" r="2" fill="none" stroke="#000080" stroke-width=".8"/></svg>+91</span><input id="regPhone" name="phone" type="tel" autocomplete="tel-national" inputmode="numeric" maxlength="10" required placeholder="98765 43210"></span></label>
+        <label class="rcheck"><input id="regConsent" type="checkbox" required><span class="box" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">I agree that Zopper may store my name, email, mobile number, scores and location to run this contest and contact me about it.</span></label>
         <p class="form-err" id="regErr" role="alert" hidden></p>
-        <button class="btn" id="regSubmit" type="submit">Start playing</button>
-        <p class="sheet-note">Next, your phone will ask to share your location. It helps us see which city you're playing from. You can say no and still play.</p>
+        <button class="play-btn reg-go" id="regSubmit" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z" fill="currentColor"/></svg><span>Start playing</span></button>
+        <p class="reg-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg>Your phone will ask to share your location so we know which city you're playing from. You can say no and still play.</p>
       </form>
     </div>
   </div>
@@ -834,9 +889,10 @@ async function openLeaderboard() {
 }
 
 function openRegister() {
+  const ri = $('regSantaImg'); if (!ri.src) ri.src = SPR.img.src;
   $('regErr').hidden = true; openSheet('regSheet');
-  setTimeout(() => { try { $('regName').focus(); } catch (e) {} }, 350);
 }
+['regName', 'regEmail', 'regPhone', 'regConsent'].forEach(id => $(id).addEventListener('input', () => { $(id).removeAttribute('aria-invalid'); $('regErr').hidden = true; }));
 $('regPhone').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10); });
 $('regForm').addEventListener('submit', async e => {
   e.preventDefault();
@@ -848,10 +904,10 @@ $('regForm').addEventListener('submit', async e => {
   if (!/^[6-9]\d{9}$/.test(phone)) { $('regPhone').setAttribute('aria-invalid', 'true'); return err('Please enter your 10-digit mobile number.'); }
   if (!consent) return err('Please tick the box to agree to the contest terms.');
   $('regErr').hidden = true;
-  const btn = $('regSubmit'); btn.disabled = true; btn.textContent = 'Getting your location…';
+  const btn = $('regSubmit'), lbl = btn.querySelector('span'); btn.disabled = true; lbl.textContent = 'Finding you…';
   const g = await getLocation();
   if (g) { Object.assign(g, await cityFor(g)); lastGeo = g; }
-  btn.textContent = 'Saving…';
+  lbl.textContent = 'Saving…';
   try {
     const r = await api('register', Object.assign({ name, email, phone, consent: true }, g || {}), 10000);
     savePlayer({ token: r.token, name: r.name, best: r.best, rank: r.rank, total: r.total });
@@ -860,7 +916,7 @@ $('regForm').addEventListener('submit', async e => {
   } catch (ex) {
     if (ex.offline) { err("Can't reach the server right now. Check your internet and try again."); }
     else err(ex.message);
-  } finally { btn.disabled = false; btn.textContent = 'Start playing'; }
+  } finally { btn.disabled = false; lbl.textContent = 'Start playing'; }
 });
 $('pauseBtn').addEventListener('click', pause);
 $('resumeBtn').addEventListener('click', resume);
