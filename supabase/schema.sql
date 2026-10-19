@@ -134,7 +134,7 @@ returns jsonb language sql stable security definer set search_path = public as $
     'avg_score',      (select coalesce(round(avg(score)), 0) from games where not flagged),
     'flagged_games',  (select count(*) from games where flagged),
     'located_gps',    (select count(*) from players where location_source = 'gps'),
-    'by_city',        (select coalesce(jsonb_agg(c order by c->>'players' desc), '[]'::jsonb) from (
+    'by_city',        (select coalesce(jsonb_agg(c order by (c->>'players')::int desc), '[]'::jsonb) from (
                          select jsonb_build_object('city', coalesce(city, ip_city, 'Unknown'), 'players', count(*)::int, 'top', max(best_score)) as c
                          from players group by coalesce(city, ip_city, 'Unknown') order by count(*) desc limit 15) x),
     'by_day',         (select coalesce(jsonb_agg(d order by d->>'day'), '[]'::jsonb) from (
