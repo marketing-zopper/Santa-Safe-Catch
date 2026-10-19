@@ -1,28 +1,44 @@
 # Santa's Safe Catch · Zopper Christmas
 
-In-store phone game: customers scan a QR, swipe to move Santa and catch falling phones in his big red sack.
-No login. 3 lives (drop a phone or catch coal = lose a life; Zopper shield = +1 life). Speed ramps up until it's impossible to keep up.
+Mobile browser game for Zopper stores: swipe to move Santa and catch falling phones in his sack.
+Players sign up with name, email and mobile number; every game is saved and ranked on a leaderboard.
+The top players when the campaign ends win prizes.
 
-## Files
-- `index.html` – the whole game (no build step)
-- `vercel.json` – static hosting settings
+## What's in the repo
+| Path | What it is |
+|---|---|
+| `index.html` | The game (single file; the game engine is inlined) |
+| `engine.js` | The game rules. Also used by the server to re-check every score |
+| `admin.html` | Admin dashboard at `/admin` (players, scores, locations, CSV export) |
+| `api/` | Vercel serverless functions: `register`, `start`, `finish`, `leaderboard`, `admin` |
+| `supabase/schema.sql` | Database tables and functions. Run once in Supabase |
+| `vercel.json` | Hosting settings |
 
-## Prize tiers (set per store in the QR link)
-Defaults: 1000 Small gift · 1500 Bigger gift · 2000 Grand prize. Override with URL parameters:
+## One-time setup (about 10 minutes)
+1. **Create the database.** Go to supabase.com → New project (region: Mumbai `ap-south-1`). Save the database password.
+2. **Create the tables.** Supabase → SQL Editor → New query → paste all of `supabase/schema.sql` → Run.
+3. **Copy the connection string.** Supabase → Connect (top bar) → *Transaction pooler* → copy the URI
+   (it looks like `postgresql://postgres.xxxx:[YOUR-PASSWORD]@aws-0-ap-south-1.pooler.supabase.com:6543/postgres`)
+   and put your database password in place of `[YOUR-PASSWORD]`.
+4. **Add 3 environment variables in Vercel** → Project → Settings → Environment Variables (Production):
+   - `DATABASE_URL` = the connection string from step 3
+   - `TOKEN_SECRET` = any long random text (at least 32 characters). Keep it secret and don't change it during the campaign
+   - `ADMIN_PASSWORD` = the password for `/admin`
+5. **Redeploy** (Vercel → Deployments → ⋯ → Redeploy). Open the game, sign up, play one round, then check `/admin`.
 
-`https://<your-site>/?t1=1000&t2=1500&t3=2000&g1=Chocolate&g2=Coffee%20mug&g3=Rs%20500%20voucher`
+## How scores are protected
+- The server picks each game's random seed (`/api/start`). The phone records Santa's moves and sends them at the end (`/api/finish`).
+- The server re-plays the whole game with the same rules (`engine.js`) and saves **its own** score, not the number the phone reports.
+- A game that claims to have been played faster than real time is **flagged** and doesn't count towards the leaderboard.
+  Flagged games show up in the admin Games tab. You can disqualify any player from the dashboard.
+- Each game can only be saved once. All tables are closed to the public. Only the API (with `DATABASE_URL`) can read or write them.
+- Before giving out prizes, call the top players to confirm their numbers.
+  The admin dashboard shows each winner's games, times and locations.
 
-## Difficulty (tested with 500 simulated games per skill level)
-| Player model | Reached 1000 | Reached 1500 | Reached 2000 |
-|---|---|---|---|
-| Perfect bot (instant reactions) | 99% | 48% | 0.8% |
-| Expert human model | 98% | 37% | 0.2% |
-| Good human model | 97% | 31% | 0.4% |
-| Average human model | 84% | 13% | 0% |
-| Casual / first-time model | 0% | 0% | 0% |
+## Location
+After sign-up the phone asks to share its location. If the player allows it, we store GPS coordinates and the city.
+If they decline, we store the approximate city from their network (Vercel IP lookup). The dashboard marks which one each player has.
 
-From ~55 seconds in, drops are forced far apart faster than the sleigh's top speed, so every run ends by roughly 65–75 seconds.
-Tuning lives in the `CFG` block at the top of the engine script (fall speed, drop interval, `minJump` wall, points per phone).
-
-## Deploy
-Vercel → Add New → Project → import repo → Framework: Other → Deploy.
+## Privacy
+The sign-up form asks for explicit consent to store name, email, mobile, scores and location for the contest.
+Export or delete the data when the campaign is over (Supabase → Table Editor, or the CSV export in `/admin`).

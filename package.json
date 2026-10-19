@@ -1,0 +1,7 @@
+{
+  "name": "santa-safe-catch",
+  "private": true,
+  "description": "Zopper in-store Christmas game with leaderboard backend (Vercel functions + Supabase Postgres)",
+  "engines": { "node": ">=20" },
+  "dependencies": { "pg": "8.13.1" }
+}

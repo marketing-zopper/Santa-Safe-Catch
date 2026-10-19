@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Safe Catch Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Lilita+One&display=swap">
+<style>
+/* Layout: sticky header, KPI strip, two trend charts + city list, then a tabbed data table. */
+:root{
+  --bg:#F3F5FB; --panel:#FFFFFF; --ink:#1D1E3F; --ink-2:#4A4C78; --muted:#7A7DA3; --line:#E1E5F2;
+  --brand:#263E91; --accent:#00B5EA; --orange:#ED763B; --bar:#263E91; --bar-hover:#00B5EA;
+  --good:#1F8A5B; --bad:#C62839; --bad-bg:#FDE8EA; --chip:#EEF1FA;
+  --font-display:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;
+  --font-body:"Baloo 2","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12132E; --panel:#1C1E44; --ink:#F2F3FA; --ink-2:#C3C6E6; --muted:#8E92BE; --line:#2D3062;
+  --brand:#7FA0FF; --bar:#00B5EA; --bar-hover:#FBEB3C; --good:#4CC38A; --bad:#FF6B7A; --bad-bg:#3A1A2A; --chip:#262960; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12132E; --panel:#1C1E44; --ink:#F2F3FA; --ink-2:#C3C6E6; --muted:#8E92BE; --line:#2D3062;
+  --brand:#7FA0FF; --bar:#00B5EA; --bar-hover:#FBEB3C; --good:#4CC38A; --bad:#FF6B7A; --bad-bg:#3A1A2A; --chip:#262960; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.4}
+[hidden]{display:none!important}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding-block:24px}
+.login-card{width:100%;max-width:360px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+.login-card h1{margin:0;font-family:var(--font-display);font-weight:400;font-size:28px;line-height:1.05;color:var(--brand)}
+.login-card p{margin:0;color:var(--ink-2)}
+input[type=password],input[type=search]{width:100%;border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px}
+input:focus{outline:none;border-color:var(--accent)}
+.btn{border:0;border-radius:12px;padding:10px 16px;background:var(--orange);color:#fff;font-weight:800;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:var(--chip);color:var(--ink)}
+.err{color:var(--bad);font-weight:700;margin:0}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.hbar{display:flex;align-items:center;gap:12px;padding-block:12px;flex-wrap:wrap}
+.hbar h1{margin:0;font-family:var(--font-display);font-weight:400;font-size:22px;color:var(--brand);margin-right:auto}
+.hbar h1 small{font-family:var(--font-body);font-size:13px;font-weight:700;color:var(--muted);margin-left:8px;letter-spacing:.06em;text-transform:uppercase}
+.updated{color:var(--muted);font-size:13px;font-weight:600}
+
+main{display:flex;flex-direction:column;gap:18px;padding-block:18px 40px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .lbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kpi .val{font-family:var(--font-display);font-size:32px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .sub{font-size:13px;font-weight:600;color:var(--ink-2)}
+.kpi.warn .val{color:var(--bad)}
+
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media (max-width:980px){.grid3{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.panel h2{margin:0 0 2px;font-size:16px;font-weight:800}
+.panel .hint{margin:0 0 10px;font-size:13px;color:var(--muted);font-weight:600}
+.chart{position:relative;height:170px}
+.chart svg{width:100%;height:100%;display:block;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--panel);font-size:12px;font-weight:700;padding:5px 8px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-110%)}
+.cities{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.cities li{display:grid;grid-template-columns:minmax(0,110px) 1fr auto;gap:10px;align-items:center;font-size:14px;font-weight:600}
+.cities .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cities .bar{height:10px;border-radius:0 4px 4px 0;background:var(--bar);min-width:2px}
+.cities .n{font-variant-numeric:tabular-nums;color:var(--ink-2);font-weight:700}
+
+/* table */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:0;background:var(--chip);border-radius:999px;padding:7px 14px;font-weight:800;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--brand);color:var(--panel)}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.toolbar input[type=search]{flex:1;min-width:200px;max-width:380px}
+.toolbar label{display:flex;gap:6px;align-items:center;font-weight:700;font-size:14px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg);position:sticky;top:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+tr.dq td{color:var(--muted);text-decoration:line-through}
+tr.dq td.act{text-decoration:none}
+.rank{font-family:var(--font-display);font-size:16px}
+.pill{display:inline-block;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:800}
+.pill.gps{background:#E3F6EC;color:#16704A}.pill.net{background:var(--chip);color:var(--ink-2)}
+.pill.flag{background:var(--bad-bg);color:var(--bad)}
+a{color:var(--brand);font-weight:700}
+.linkbtn{border:0;background:none;color:var(--brand);font-weight:800;cursor:pointer;padding:0}
+.linkbtn.danger{color:var(--bad)}
+.pager{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:10px;font-weight:700;color:var(--ink-2)}
+.empty{padding:24px;text-align:center;color:var(--muted);font-weight:700}
+</style>
+</head>
+<body>
+<section id="login">
+  <form class="login-card" id="loginForm">
+    <h1>Santa's Safe Catch<br>Admin</h1>
+    <p>Enter the admin password to see players, scores and locations.</p>
+    <input type="password" id="pw" autocomplete="current-password" placeholder="Admin password" aria-label="Admin password" required>
+    <p class="err" id="loginErr" hidden></p>
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+</section>
+
+<div id="appView" hidden>
+  <header><div class="wrap hbar">
+    <h1>Santa's Safe Catch<small>Admin</small></h1>
+    <span class="updated" id="updated"></span>
+    <button class="btn ghost" id="refreshBtn">Refresh</button>
+    <button class="btn ghost" id="logoutBtn">Sign out</button>
+  </div></header>
+
+  <main class="wrap">
+    <section class="kpis" id="kpis" aria-label="Summary"></section>
+
+    <section class="grid3">
+      <div class="panel"><h2>New players</h2><p class="hint">Per day, last 30 days</p><div class="chart" id="chPlayers"></div></div>
+      <div class="panel"><h2>Games played</h2><p class="hint">Per day, last 30 days</p><div class="chart" id="chGames"></div></div>
+      <div class="panel"><h2>Players by city</h2><p class="hint">GPS city, or network city when location was denied</p><ul class="cities" id="cities"></ul></div>
+    </section>
+
+    <section class="panel">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="leaderboard" aria-selected="true">Leaderboard</button>
+        <button class="tab" role="tab" data-tab="players" aria-selected="false">All players</button>
+        <button class="tab" role="tab" data-tab="games" aria-selected="false">Games</button>
+      </div>
+      <div class="toolbar">
+        <input type="search" id="search" placeholder="Search name, email, mobile or city" aria-label="Search">
+        <label id="flagWrap" hidden><input type="checkbox" id="flagOnly"> Flagged only</label>
+        <span id="playerFilter" hidden></span>
+        <button class="btn" id="exportBtn">Export CSV</button>
+      </div>
+      <div class="tablewrap"><table id="table"></table></div>
+      <div class="pager"><span id="pageInfo"></span><button class="btn ghost" id="prevBtn">Previous</button><button class="btn ghost" id="nextBtn">Next</button></div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const ss = { get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch (e) {} } };
+let key = ss.get('ssc-admin');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const nf = new Intl.NumberFormat('en-IN');
+const dt = v => v ? new Date(v).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+
+async function call(qs, opts) {
+  const r = await fetch('/api/admin?' + qs, Object.assign({ headers: { 'x-admin-key': key, 'Content-Type': 'application/json' } }, opts || {}));
+  if (r.status === 401) { logout('Wrong password. Please sign in again.'); throw new Error('auth'); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || 'Request failed');
+  return j;
+}
+
+/* ---------- login ---------- */
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault(); key = $('pw').value; $('loginErr').hidden = true;
+  try { await call('action=stats'); ss.set('ssc-admin', key); boot(); }
+  catch (er) { if (er.message !== 'auth') { $('loginErr').textContent = er.message; $('loginErr').hidden = false; } }
+});
+function logout(msg) {
+  key = null; ss.set('ssc-admin', null); $('appView').hidden = true; $('login').hidden = false;
+  if (msg) { $('loginErr').textContent = msg; $('loginErr').hidden = false; }
+}
+$('logoutBtn').addEventListener('click', () => logout());
+
+/* ---------- summary ---------- */
+function kpi(lbl, val, sub, warn) { return `<div class="kpi${warn ? ' warn' : ''}"><span class="lbl">${lbl}</span><span class="val">${val}</span><span class="sub">${sub || '&nbsp;'}</span></div>`; }
+function barChart(el, rows, field, label) {
+  const W = 360, H = 150, padL = 28, padB = 18, n = rows.length || 1;
+  const max = Math.max(1, ...rows.map(r => r[field]));
+  const nice = max <= 5 ? 5 : Math.ceil(max / 5) * 5;
+  const bw = (W - padL) / n, gap = 2;
+  const y = v => (H - padB) - (v / nice) * (H - padB - 8);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label} per day">`;
+  for (const t of [0, nice / 2, nice]) svg += `<line x1="${padL}" x2="${W}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${padL - 6}" y="${y(t) + 4}" text-anchor="end" font-size="10" fill="var(--muted)">${nf.format(t)}</text>`;
+  rows.forEach((r, i) => {
+    const v = r[field], x = padL + i * bw + gap / 2, h = (H - padB) - y(v), w = Math.max(1, bw - gap);
+    const yy = y(v), rad = Math.min(4, w / 2, h);
+    const path = h > 0 ? `M${x},${H - padB} V${yy + rad} Q${x},${yy} ${x + rad},${yy} H${x + w - rad} Q${x + w},${yy} ${x + w},${yy + rad} V${H - padB} Z` : '';
+    svg += `<g class="b" data-i="${i}"><rect x="${padL + i * bw}" y="0" width="${bw}" height="${H - padB}" fill="transparent"/>${path ? `<path d="${path}" fill="var(--bar)"/>` : ''}</g>`;
+  });
+  const lab = i => new Date(rows[i].day).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  if (rows.length) { svg += `<text x="${padL}" y="${H - 3}" font-size="10" fill="var(--muted)">${lab(0)}</text><text x="${W}" y="${H - 3}" text-anchor="end" font-size="10" fill="var(--muted)">${lab(rows.length - 1)}</text>`; }
+  svg += '</svg><div class="tip" hidden></div>';
+  el.innerHTML = svg;
+  const tip = el.querySelector('.tip'), s = el.querySelector('svg');
+  el.querySelectorAll('.b').forEach(g => {
+    g.addEventListener('pointerenter', () => {
+      const i = +g.dataset.i, r = rows[i], box = s.getBoundingClientRect(), sx = box.width / W;
+      g.querySelector('path') && g.querySelector('path').setAttribute('fill', 'var(--bar-hover)');
+      tip.hidden = false; tip.textContent = `${lab(i)} · ${nf.format(r[field])} ${label.toLowerCase()}`;
+      tip.style.left = ((padL + (i + 0.5) * bw) * sx) + 'px'; tip.style.top = (y(r[field]) * (box.height / H)) + 'px';
+    });
+    g.addEventListener('pointerleave', () => { tip.hidden = true; g.querySelector('path') && g.querySelector('path').setAttribute('fill', 'var(--bar)'); });
+  });
+}
+async function loadStats() {
+  const s = await call('action=stats');
+  const gpsPct = s.players ? Math.round(s.located_gps / s.players * 100) : 0;
+  $('kpis').innerHTML =
+    kpi('Players', nf.format(s.players), `+${nf.format(s.players_today)} today`) +
+    kpi('Games played', nf.format(s.games), `+${nf.format(s.games_today)} today`) +
+    kpi('Top score', nf.format(s.top_score), 'Current #1') +
+    kpi('Average score', nf.format(s.avg_score), 'Per game') +
+    kpi('GPS location shared', gpsPct + '%', `${nf.format(s.located_gps)} of ${nf.format(s.players)} players`) +
+    kpi('Flagged games', nf.format(s.flagged_games), s.flagged_games ? 'Review in the Games tab' : 'Nothing suspicious', s.flagged_games > 0);
+  barChart($('chPlayers'), s.by_day, 'players', 'Players');
+  barChart($('chGames'), s.by_day, 'games', 'Games');
+  const max = Math.max(1, ...s.by_city.map(c => c.players));
+  $('cities').innerHTML = s.by_city.length ? s.by_city.map(c =>
+    `<li><span class="nm" title="${esc(c.city)}">${esc(c.city)}</span><span class="bar" style="width:${(c.players / max) * 100}%"></span><span class="n">${nf.format(c.players)}</span></li>`).join('')
+    : '<li class="empty">No players yet</li>';
+  $('updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
+
+/* ---------- table ---------- */
+const LIMIT = 50;
+let tab = 'leaderboard', offset = 0, total = 0, playerId = null, playerLabel = '';
+const loc = r => {
+  const city = r.city || r.ip_city || '';
+  const src = r.location_source === 'gps' ? '<span class="pill gps">GPS</span>' : '<span class="pill net">Network</span>';
+  const map = r.lat != null ? ` <a href="https://www.google.com/maps?q=${r.lat},${r.lng}" target="_blank" rel="noopener">Map</a>` : '';
+  return `${esc(city)} ${city || r.lat != null ? src : ''}${map}`;
+};
+const COLS = {
+  leaderboard: [['Rank', r => `<span class="rank">${r.rank}</span>`, 'num'], ['Name', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Email', r => esc(r.email)],
+    ['Best', r => nf.format(r.best_score), 'num'], ['Reached', r => dt(r.best_at)], ['Games', r => r.games_played, 'num'], ['Location', loc], ['', actions, 'act']],
+  players: [['Joined', r => dt(r.created_at)], ['Name', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Email', r => esc(r.email)],
+    ['Best', r => nf.format(r.best_score), 'num'], ['Rank', r => r.rank || '–', 'num'], ['Games', r => r.games_played, 'num'], ['Last played', r => dt(r.last_seen_at)], ['Location', loc], ['', actions, 'act']],
+  games: [['When', r => dt(r.created_at)], ['Player', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Score', r => nf.format(r.score), 'num'],
+    ['Length', r => r.duration_s != null ? Math.round(r.duration_s) + 's' : '', 'num'], ['Phones caught', r => r.phones_caught, 'num'],
+    ['Check', r => r.flagged ? `<span class="pill flag" title="${esc(r.flag_reason)}">Flagged</span>` : (r.flag_reason ? `<span class="pill net" title="${esc(r.flag_reason)}">Note</span>` : 'OK')],
+    ['Location', r => esc(r.city || r.ip_city || '') + (r.lat != null ? ` <a href="https://www.google.com/maps?q=${r.lat},${r.lng}" target="_blank" rel="noopener">Map</a>` : '')]],
+};
+function actions(r) {
+  return `<button class="linkbtn" data-games="${r.id}" data-name="${esc(r.name)}">Games</button> · ` +
+    (r.disqualified ? `<button class="linkbtn" data-dq="${r.id}" data-v="0">Reinstate</button>` : `<button class="linkbtn danger" data-dq="${r.id}" data-v="1">Disqualify</button>`);
+}
+function qsFor(extra) {
+  const p = new URLSearchParams({ action: tab, limit: LIMIT, offset, q: $('search').value.trim() });
+  if (tab === 'games' && $('flagOnly').checked) p.set('flagged', '1');
+  if (tab === 'games' && playerId) p.set('player', playerId);
+  for (const k in extra || {}) p.set(k, extra[k]);
+  return p.toString();
+}
+async function loadTable() {
+  const cols = COLS[tab];
+  $('flagWrap').hidden = tab !== 'games';
+  $('playerFilter').hidden = !(tab === 'games' && playerId);
+  if (playerId) $('playerFilter').innerHTML = `Showing games for <b>${esc(playerLabel)}</b> <button class="linkbtn" id="clearPlayer">Show all</button>`;
+  const d = await call(qsFor());
+  total = d.total;
+  $('table').innerHTML = `<thead><tr>${cols.map(c => `<th class="${c[2] || ''}">${c[0]}</th>`).join('')}</tr></thead><tbody>` +
+    (d.rows.length ? d.rows.map(r => `<tr class="${r.disqualified ? 'dq' : ''}">${cols.map(c => `<td class="${c[2] || ''}">${c[1](r)}</td>`).join('')}</tr>`).join('')
+      : `<tr><td class="empty" colspan="${cols.length}">${$('search').value ? 'No matches.' : 'Nothing here yet.'}</td></tr>`) + '</tbody>';
+  $('pageInfo').textContent = total ? `${offset + 1}–${Math.min(offset + LIMIT, total)} of ${nf.format(total)}` : '';
+  $('prevBtn').disabled = offset === 0; $('nextBtn').disabled = offset + LIMIT >= total;
+}
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', String(x === b)));
+  tab = b.dataset.tab; offset = 0; if (tab !== 'games') playerId = null; loadTable();
+}));
+let st; $('search').addEventListener('input', () => { clearTimeout(st); st = setTimeout(() => { offset = 0; loadTable(); }, 300); });
+$('flagOnly').addEventListener('change', () => { offset = 0; loadTable(); });
+$('prevBtn').addEventListener('click', () => { offset = Math.max(0, offset - LIMIT); loadTable(); });
+$('nextBtn').addEventListener('click', () => { offset += LIMIT; loadTable(); });
+document.addEventListener('click', async e => {
+  const g = e.target.closest('[data-games]');
+  if (g) { playerId = g.dataset.games; playerLabel = g.dataset.name; tab = 'games'; offset = 0; $('search').value = '';
+    document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', String(x.dataset.tab === 'games'))); return loadTable(); }
+  const q = e.target.closest('[data-dq]');
+  if (q) {
+    const v = q.dataset.v === '1';
+    if (v && q.dataset.confirm !== '1') { q.dataset.confirm = '1'; q.textContent = 'Tap again to confirm'; setTimeout(() => { q.dataset.confirm = ''; q.textContent = 'Disqualify'; }, 3000); return; }
+    await call('action=disqualify', { method: 'POST', body: JSON.stringify({ id: q.dataset.dq, value: v }) });
+    loadTable(); loadStats();
+  }
+  if (e.target.id === 'clearPlayer') { playerId = null; offset = 0; loadTable(); }
+});
+$('exportBtn').addEventListener('click', async () => {
+  const r = await fetch('/api/admin?' + qsFor({ action: 'export', type: tab }), { headers: { 'x-admin-key': key } });
+  if (!r.ok) return;
+  const blob = await r.blob(), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `santa-safe-catch-${tab}-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+});
+$('refreshBtn').addEventListener('click', () => { loadStats(); loadTable(); });
+
+let timer;
+function boot() {
+  $('login').hidden = true; $('appView').hidden = false;
+  loadStats().catch(() => {}); loadTable().catch(() => {});
+  clearInterval(timer); timer = setInterval(() => { if (!document.hidden && key) { loadStats().catch(() => {}); } }, 60000);
+}
+if (key) boot();
+})();
+</script>
+</body>
+</html>

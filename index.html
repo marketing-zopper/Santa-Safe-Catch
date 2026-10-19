@@ -175,6 +175,45 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
 .prize-row .pr-diff{margin-left:auto;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#4A4C78;text-align:right}
 @media (max-height:640px){.logo-main{font-size:clamp(48px,15vw,70px)}.logo-tag{display:none}.logo-sub{display:none}.play-btn{height:64px;font-size:32px}}
 @media (prefers-reduced-motion:reduce){.logo,.play-btn,.play-btn::after,.sheet-panel{animation:none}}
+/* ---------- Sign-up, leaderboard, results ---------- */
+.next b{color:var(--lemon);font-family:var(--font-display);font-weight:400;font-size:16px;font-variant-numeric:tabular-nums;margin-left:4px}
+.player-chip{border:0;background:rgba(29,30,63,.75);color:var(--almond);border-radius:999px;padding:7px 14px 6px;font:700 14px var(--font-body);cursor:pointer;display:flex;gap:6px;align-items:center;max-width:100%}
+.player-chip b{color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:40vw}
+.player-chip span{color:var(--cyan);text-decoration:underline}
+.player-chip[hidden]{display:none}
+.sheet-lead{margin:-4px 0 0;font-size:15px;font-weight:600;line-height:1.35}
+#regForm{display:flex;flex-direction:column;gap:12px}
+.field{display:flex;flex-direction:column;gap:4px;font-weight:800;font-size:13px;letter-spacing:.02em}
+.field input{font:600 17px var(--font-body);color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:14px;padding:11px 12px;min-width:0;width:100%;box-sizing:border-box}
+.field input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,181,234,.3)}
+.field input[aria-invalid="true"]{border-color:var(--berry)}
+.tel{display:flex;align-items:stretch}
+.tel i{font-style:normal;display:grid;place-items:center;padding:0 10px;background:var(--ink);color:#fff;border-radius:14px 0 0 14px;font:800 16px var(--font-body)}
+.tel input{border-radius:0 14px 14px 0;border-left:0}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13px;font-weight:600;line-height:1.35;color:#3A3C66}
+.check input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:var(--orange)}
+.form-err{margin:0;background:#FFE1E4;color:#A3142E;border:2px solid #E23B4E;border-radius:12px;padding:8px 12px;font-weight:700;font-size:14px}
+.form-err[hidden]{display:none}
+.btn[disabled]{opacity:.7;pointer-events:none}
+.lb-mine{background:var(--ink);color:#fff;border-radius:14px;padding:10px 14px;font-weight:700;font-size:15px;display:flex;justify-content:space-between;gap:10px}
+.lb-mine[hidden]{display:none}
+.lb-mine b{color:var(--lemon);font-family:var(--font-display);font-weight:400;font-size:18px}
+.lb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.lb-list li{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:7px 12px;min-width:0}
+.lb-list li .rk{font-family:var(--font-display);font-size:18px;text-align:center}
+.lb-list li .nm{font-weight:800;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.lb-list li .nm small{display:block;font-weight:600;font-size:12px;color:#5C5E88}
+.lb-list li .sc{font-family:var(--font-display);font-size:20px;font-variant-numeric:tabular-nums}
+.lb-list li:nth-child(1){background:linear-gradient(120deg,#FFE27A,#FFB067)}
+.lb-list li:nth-child(2){background:#EEF1FA}.lb-list li:nth-child(3){background:#FFE7D2}
+.lb-list li.lb-empty{display:block;text-align:center;font-weight:700;color:#5C5E88;background:transparent;border-style:dashed}
+.result{border:3px solid var(--ink);border-radius:16px;padding:14px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center;background:#fff}
+.result.pb{background:linear-gradient(160deg,#FFF1A0,#FFC27A)}
+.result .r-title{font-family:var(--font-display);font-size:24px;line-height:1.1}
+.result .r-rank{font-family:var(--font-display);font-size:44px;line-height:1;color:var(--sky)}
+.result .r-rank small{font-size:16px;color:#4A4C78;margin-left:4px}
+.result .r-sub{font-size:14px;font-weight:700;line-height:1.35}
+.toast{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:14px;padding:10px 16px;font-weight:700;font-size:14px;max-width:calc(100% - 32px);text-align:center;z-index:9;pointer-events:none;animation:rise .3s}
 </style>
 </head>
 <body>
@@ -186,8 +225,7 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
   <div id="hud" hidden>
     <div class="score-box">
       <div class="score" id="score">0</div>
-      <div class="track" id="track"><i id="trackFill"></i></div>
-      <div class="next" id="next">Next gift at 1000</div>
+      <div class="next">Your best <b id="hudBest">0</b></div>
     </div>
     <div class="right">
       <div class="lives" id="lives" aria-label="Lives"></div>
@@ -219,8 +257,9 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
       <button class="play-btn" id="playBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z" fill="currentColor"/></svg>Play</button>
       <div class="menu-row">
         <button class="pill-btn" id="howBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#00B5EA"/><path d="M9.2 9.3a2.9 2.9 0 0 1 5.6 1c0 2-2.8 2.3-2.8 4" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.4" fill="#fff"/></svg>How to play</button>
-        <button class="pill-btn" id="prizeBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="9" width="18" height="12" rx="2" fill="#ED763B"/><rect x="2" y="6" width="20" height="5" rx="1.5" fill="#E23B4E"/><rect x="10.5" y="6" width="3" height="15" fill="#FBEB3C"/><path d="M12 6C9 1 5 3.5 7.5 6M12 6c3-5 7-2.5 4.5 0" stroke="#FBEB3C" stroke-width="2" fill="none"/></svg>Prizes</button>
+        <button class="pill-btn" id="leaderBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="12" width="6" height="9" rx="1.5" fill="#00B5EA"/><rect x="9" y="6" width="6" height="15" rx="1.5" fill="#FBEB3C"/><rect x="16" y="9" width="6" height="12" rx="1.5" fill="#ED763B"/><path d="M12 1.8l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2L9.1 4l2-.3z" fill="#E23B4E"/></svg>Leaderboard</button>
       </div>
+      <button class="player-chip" id="playerChip" hidden>Playing as <b id="playerName"></b><span>Not you?</span></button>
     </div>
   </div>
 
@@ -245,14 +284,33 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
     </div>
   </div>
 
-  <!-- Prizes sheet -->
-  <div class="sheet" id="prizeSheet" hidden>
-    <div class="sheet-panel" role="dialog" aria-labelledby="prizeTitle">
+  <!-- Leaderboard sheet -->
+  <div class="sheet" id="leaderSheet" hidden>
+    <div class="sheet-panel" role="dialog" aria-labelledby="lbTitle">
       <button class="sheet-x" data-close aria-label="Close">×</button>
-      <h2 id="prizeTitle">Prizes</h2>
-      <div class="prize-list" id="tiersStart"></div>
-      <p class="sheet-note">Gifts are decided by the store. When the game ends, show your score screen to the store team.</p>
+      <h2 id="lbTitle">Leaderboard</h2>
+      <div class="lb-mine" id="lbMine" hidden></div>
+      <ol class="lb-list" id="lbList"><li class="lb-empty">Loading the top players…</li></ol>
+      <p class="sheet-note">Your best score counts and you can play as many times as you like. The top players when the Christmas campaign ends win prizes from Zopper.</p>
       <button class="btn" data-close data-play>Play now</button>
+    </div>
+  </div>
+
+  <!-- Sign-up sheet -->
+  <div class="sheet" id="regSheet" hidden>
+    <div class="sheet-panel" role="dialog" aria-labelledby="regTitle">
+      <button class="sheet-x" data-close aria-label="Close">×</button>
+      <h2 id="regTitle">Join the challenge</h2>
+      <p class="sheet-lead">Your best score goes on the leaderboard. Top players win prizes when the campaign ends.</p>
+      <form id="regForm" novalidate>
+        <label class="field"><span>Your name</span><input id="regName" name="name" autocomplete="name" maxlength="60" required placeholder="e.g. Rahul Sharma"></label>
+        <label class="field"><span>Email</span><input id="regEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required placeholder="you@example.com"></label>
+        <label class="field"><span>Mobile number</span><span class="tel"><i>+91</i><input id="regPhone" name="phone" type="tel" autocomplete="tel-national" inputmode="numeric" maxlength="10" required placeholder="10-digit number"></span></label>
+        <label class="check"><input id="regConsent" type="checkbox" required><span>I agree that Zopper may store my name, email, mobile number, scores and location to run this contest and contact me about it.</span></label>
+        <p class="form-err" id="regErr" role="alert" hidden></p>
+        <button class="btn" id="regSubmit" type="submit">Start playing</button>
+        <p class="sheet-note">Next, your phone will ask to share your location. It helps us see which city you're playing from. You can say no and still play.</p>
+      </form>
     </div>
   </div>
 
@@ -272,7 +330,7 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
       <div class="eyebrow">Game over</div>
       <p class="final-lbl">Your score</p>
       <div class="final" id="finalScore">0</div>
-      <div class="prize" id="prize"></div>
+      <div class="result" id="result"></div>
       <div class="stats"><span>Phones saved <b id="stCaught">0</b></span><span>Time <b id="stTime">0s</b></span><span>Best <b id="stBest">0</b></span></div>
       <p class="promo">Real phones crack too. Ask the store team about <em>Zopper</em> phone protection plans.</p>
       <button class="btn" id="againBtn">Play again</button>
@@ -294,15 +352,15 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
     X_MIN: 34, X_MAX: 366,
     LIVES: 3, MAX_LIVES: 3,
     // difficulty curve (t = seconds survived)
-    fall: t => Math.min(950, 140 + 5 * t + 0.06 * t * t),
-    interval: t => Math.max(0.3, 1.25 - 0.006 * t - 0.00012 * t * t),
-    jump: t => 110 + 5 * t,
-    minJump: t => Math.max(0, (t - 54) * 8),   // the 'wall': forces far-apart drops late in the game
-    coalChance: t => Math.min(0.35, Math.max(0, (t - 6) * 0.009)),
+    fall: t => Math.min(620, 130 + 4 * t + 0.03 * t * t) + Math.max(0, t - 100) * 1.2,
+    interval: t => Math.max(0.34, Math.max(0.48, 1.3 - 0.005 * t - 0.00008 * t * t) - Math.max(0, t - 100) * 0.0008),
+    jump: t => Math.min(300, 90 + 3 * t),
+    minJump: t => 0,                            // no wall: endless, keeps getting slowly harder
+    coalChance: t => Math.min(0.28, Math.max(0, (t - 8) * 0.006)),
     goldChance: t => (t > 5 ? 0.07 : 0),
-    phonePts: t => 10 + 2 * Math.floor(t / 10),
+    phonePts: t => Math.min(40, 10 + 2 * Math.floor(t / 10)),
     goldMult: 4,
-    shieldEvery: 28, shieldUntil: 75,
+    shieldEvery: 35, shieldUntil: 1e9,
   };
   function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
 
@@ -367,7 +425,17 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
       if (this.lives <= 0) { this.lives = 0; this.over = true; this.events.push({ e: 'over' }); }
     }
   }
-  const api = { CFG, Sim, rng };
+  // Server-side check: re-run a game from its seed and the recorded sleigh targets.
+  // inputs = [tick, x, tick, x, ...] — before step number `tick`, the target becomes x.
+  function replay(seed, inputs, endTick, maxTicks) {
+    const s = new Sim(seed); let k = 0; const lim = Math.min(endTick || Infinity, maxTicks || 60 * 60 * 30);
+    while (!s.over && s.tick < lim) {
+      while (k < inputs.length && inputs[k] <= s.tick + 1) { s.setTarget(inputs[k + 1]); k += 2; }
+      s.step();
+    }
+    return { score: s.score, caught: s.caught, t: s.t, ticks: s.tick, over: s.over };
+  }
+  const api = { CFG, Sim, rng, replay };
   if (typeof module !== 'undefined') module.exports = api; else root.SantaEngine = api;
 })(this);
 
@@ -378,23 +446,57 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
 const { Sim, CFG } = window.SantaEngine;
 const W = CFG.W, H = CFG.H;
 
-/* ---------- Store config (URL: ?t1=1000&t2=1500&t3=2000&g1=Chocolate&g2=Mug&g3=Voucher) ---------- */
-const qs = (() => { try { return new URLSearchParams(location.search); } catch (e) { return new URLSearchParams(); } })();
-const num = (k, d) => { const v = parseInt(qs.get(k), 10); return v > 0 ? v : d; };
-const TIERS = [
-  { pts: num('t1', 1000), label: qs.get('g1') || 'Small gift',  cls: 't1', color: '#00B5EA' },
-  { pts: num('t2', 1500), label: qs.get('g2') || 'Bigger gift', cls: 't2', color: '#F5C400' },
-  { pts: num('t3', 2000), label: qs.get('g3') || 'Grand prize', cls: 't3', color: '#ED763B' },
-].sort((a, b) => a.pts - b.pts);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const medal = (c, n) => `<svg class="medal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="${c}" stroke="#1D1E3F" stroke-width="2"/><text x="12" y="16.5" text-anchor="middle" font-family="Lilita One,Arial" font-size="12" fill="#1D1E3F">${n}</text></svg>`;
-const DIFF = ['Achievable', 'Tough', 'Near impossible'];
-document.getElementById('tiersStart').innerHTML = TIERS.map((t, i) =>
-  `<div class="prize-row ${t.cls}">${medal(t.color, i + 1)}<div><div class="pr-pts">${t.pts}<small>pts</small></div><div class="pr-lbl">${esc(t.label)}</div></div><div class="pr-diff">${DIFF[i]}</div></div>`).join('');
 
 /* ---------- Storage (per-device best, optional) ---------- */
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
 let best = parseInt(store.get('ssc-best') || '0', 10) || 0;
+let player = (() => { try { return JSON.parse(store.get('ssc-player') || 'null'); } catch (e) { return null; } })();
+function savePlayer(p) { player = p; store.set('ssc-player', p ? JSON.stringify(p) : ''); }
+
+/* ---------- Backend (Vercel /api → Supabase). Falls back to practice mode when unreachable. ---------- */
+async function api(path, body, timeout) {
+  const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = setTimeout(() => ctl && ctl.abort(), timeout || 9000);
+  let r;
+  try {
+    r = await fetch('/api/' + path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl && ctl.signal } : { signal: ctl && ctl.signal });
+  } catch (e) { const err = new Error('offline'); err.offline = true; throw err; }
+  finally { clearTimeout(timer); }
+  let j = null; try { j = await r.json(); } catch (e) {}
+  if (!r.ok || !j) { const err = new Error((j && j.error) || 'offline'); err.status = r.status; err.offline = !j || !j.error || r.status >= 500; throw err; }
+  return j;
+}
+let lastGeo = null;
+function getLocation() {
+  return new Promise(res => {
+    try {
+      if (!navigator.geolocation) return res(null);
+      navigator.geolocation.getCurrentPosition(p => res({ lat: p.coords.latitude, lng: p.coords.longitude, accuracy: Math.round(p.coords.accuracy) }),
+        () => res(null), { enableHighAccuracy: false, timeout: 9000, maximumAge: 600000 });
+    } catch (e) { res(null); }
+  });
+}
+async function cityFor(g) {
+  try {
+    const ctl = new AbortController(); setTimeout(() => ctl.abort(), 4000);
+    const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${g.lat}&longitude=${g.lng}&localityLanguage=en`, { signal: ctl.signal });
+    const j = await r.json();
+    return { city: j.city || j.locality || null, region: j.principalSubdivision || null, country: j.countryName || null };
+  } catch (e) { return {}; }
+}
+// scores that couldn't be sent (bad network) are kept and retried later
+function pending() { try { return JSON.parse(store.get('ssc-pending') || '[]'); } catch (e) { return []; } }
+async function flushPending() {
+  const list = pending(); if (!list.length) return;
+  const keep = [];
+  for (const p of list) { try { await api('finish', p, 15000); } catch (e) { if (e.offline) keep.push(p); } }
+  store.set('ssc-pending', JSON.stringify(keep.slice(-3)));
+}
+function toast(msg, ms) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.getElementById('app').appendChild(t);
+  setTimeout(() => t.remove(), ms || 3200);
+}
 let muted = store.get('ssc-muted') === '1';
 
 /* ---------- Canvas + scaling ---------- */
@@ -570,10 +672,9 @@ renderMute();
 const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} };
 
 /* ---------- Game state ---------- */
-let sim = null, state = 'menu', acc = 0, lastTs = 0, tierHit = 0, ptsLevel = 0, wake = null, hudLives = -1;
+let sim = null, state = 'menu', acc = 0, lastTs = 0, ptsLevel = 0, wake = null, hudLives = -1, session = null, practice = false, rec = null, starting = false;
 const $ = id => document.getElementById(id);
-const scoreEl = $('score'), nextEl = $('next'), fillEl = $('trackFill'), livesEl = $('lives');
-$('track').insertAdjacentHTML('beforeend', TIERS.map(t => `<b style="left:${(t.pts / TIERS[2].pts) * 100}%"></b>`).join(''));
+const scoreEl = $('score'), livesEl = $('lives');
 
 function show(id) { ['startScreen', 'pauseScreen', 'overScreen'].forEach(s => $(s).hidden = s !== id); }
 /* attract mode: Santa plays by himself behind the menu */
@@ -593,26 +694,37 @@ function demoStep() {
   demo.events.length = 0;
   if (demo.t > 24) { demo.t = 0; demo.tick = 0; }   // loop the easy opening forever
 }
-function goMenu() { state = 'menu'; sim = null; $('hud').hidden = true; parts = []; floaters = []; $('menuBest').textContent = best; newDemo(); show('startScreen'); }
+function updateChip() { $('playerChip').hidden = !player; if (player) $('playerName').textContent = player.name; $('menuBest').textContent = best; }
+function goMenu() { state = 'menu'; sim = null; $('hud').hidden = true; parts = []; floaters = []; updateChip(); newDemo(); show('startScreen'); flushPending(); }
 function openSheet(id) { $(id).hidden = false; const b = $(id).querySelector('.sheet-x'); b && b.focus(); }
 document.querySelectorAll('.sheet').forEach(sh => sh.addEventListener('click', e => {
   const t = e.target.closest('[data-close]');
-  if (e.target === sh || t) { sh.hidden = true; if (t && t.hasAttribute('data-play')) startGame(); }
+  if (e.target === sh || t) { sh.hidden = true; if (t && t.hasAttribute('data-play')) onPlay(); }
 }));
 function banner(html) { const b = $('banner'); b.innerHTML = html; b.classList.remove('show'); void b.offsetWidth; b.classList.add('show'); }
 
 function updateHud(force) {
   scoreEl.textContent = sim.score;
-  const nt = TIERS.find(t => sim.score < t.pts);
-  nextEl.textContent = nt ? `Next gift at ${nt.pts}` : 'All gifts unlocked!';
-  fillEl.style.width = Math.min(100, sim.score / TIERS[2].pts * 100) + '%';
+  $('hudBest').textContent = Math.max(best, sim.score);
   if (force || hudLives !== sim.lives) { hudLives = sim.lives; livesEl.innerHTML = [0, 1, 2].map(i => heartSVG(i < sim.lives)).join(''); }
 }
 
-function startGame() {
+function onPlay() { audio(); if (player) startGame(); else openRegister(); }
+async function startGame() {
+  if (starting) return; starting = true;
   audio(); document.querySelectorAll('.sheet').forEach(sh => sh.hidden = true);
-  sim = new Sim((Date.now() ^ (Math.random() * 1e9)) >>> 0);
-  parts = []; floaters = []; tierHit = 0; ptsLevel = CFG.phonePts(0); shake = 0; lastX = sim.x; hudLives = -1;
+  let seed = null; session = null; practice = !player;
+  if (player) {
+    try { const r = await api('start', { token: player.token }, 7000); session = r.sessionId; seed = r.seed; }
+    catch (e) {
+      if (e.status === 401) { savePlayer(null); starting = false; updateChip(); openRegister(); return; }
+      practice = true; toast(e.offline ? "Can't reach the server. This is a practice round and won't be saved." : e.message);
+    }
+  }
+  starting = false;
+  if (seed == null) seed = (Date.now() ^ (Math.random() * 1e9)) >>> 0;
+  sim = new Sim(seed); rec = { inputs: [], last: null };
+  parts = []; floaters = []; ptsLevel = CFG.phonePts(0); shake = 0; lastX = sim.x; hudLives = -1;
   show(null); $('hud').hidden = false; updateHud(true);
   state = 'count'; let n = 3; const cEl = $('count');
   const step = () => {
@@ -627,19 +739,32 @@ function resume() { show(null); state = 'play'; lastTs = performance.now(); acc 
 function endGame() {
   state = 'over'; sfx.over();
   try { wake && wake.release(); } catch (e) {} wake = null;
-  const s = sim.score; if (s > best) { best = s; store.set('ssc-best', String(best)); }
+  const s = sim.score, prevBest = best;
+  if (s > best) { best = s; store.set('ssc-best', String(best)); }
   $('finalScore').textContent = s; $('stCaught').textContent = sim.caught; $('stTime').textContent = Math.floor(sim.t) + 's'; $('stBest').textContent = best;
-  let won = -1; TIERS.forEach((t, i) => { if (s >= t.pts) won = i; });
-  const now = new Date(), stamp = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) + ', ' + now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-  const p = $('prize');
-  if (won >= 0) {
-    const t = TIERS[won];
-    p.className = 'prize win';
-    p.innerHTML = `${medal(t.color, won + 1).replace('class="medal"', 'class="medal" style="width:40px;height:40px"')}<div class="p-title">You won: ${esc(t.label)}!</div><div class="p-sub">Show this screen to the store team to collect your gift.</div><div class="stamp">${stamp}</div>`;
+  const box = $('result');
+  if (practice || !session) {
+    box.className = 'result';
+    box.innerHTML = player ? `<div class="r-title">Practice round</div><div class="r-sub">We couldn't reach the server, so this score wasn't saved.</div>`
+      : `<div class="r-title">Practice round</div><div class="r-sub">Sign up from the main menu to get your scores on the leaderboard.</div>`;
   } else {
-    const t = TIERS[0];
-    p.className = 'prize lose';
-    p.innerHTML = `<div class="p-title">${s >= t.pts * 0.6 ? 'So close!' : 'Nice try!'}</div><div class="p-sub">${t.pts - s} more points for your first gift. Have another go.</div>`;
+    box.className = 'result';
+    box.innerHTML = `<div class="r-title">Saving your score…</div>`;
+    const payload = { token: player.token, sessionId: session, inputs: rec.inputs, endTick: sim.tick, clientScore: s, lat: lastGeo && lastGeo.lat, lng: lastGeo && lastGeo.lng, city: lastGeo && lastGeo.city };
+    session = null;
+    api('finish', payload, 15000).then(r => {
+      best = Math.max(best, r.best || 0); store.set('ssc-best', String(best)); $('stBest').textContent = best;
+      player.best = r.best; player.rank = r.rank; player.total = r.total; savePlayer(player);
+      const pb = r.score > 0 && r.score >= r.best && r.score > prevBest;
+      box.className = 'result' + (pb ? ' pb' : '');
+      box.innerHTML = (pb ? `<div class="r-title">New personal best!</div>` : `<div class="r-title">Your leaderboard rank</div>`) +
+        (r.rank ? `<div class="r-rank">#${r.rank}<small>of ${r.total}</small></div>` : '') +
+        `<div class="r-sub">Your best: ${r.best}. Top players when the campaign ends win prizes.</div>`;
+    }).catch(e => {
+      if (e.offline) { const list = pending(); list.push(payload); store.set('ssc-pending', JSON.stringify(list.slice(-3))); }
+      box.innerHTML = e.offline ? `<div class="r-title">Score saved on this phone</div><div class="r-sub">The network dropped. We'll send it to the leaderboard automatically next time you open the game.</div>`
+        : `<div class="r-title">Couldn't save this score</div><div class="r-sub">${esc(e.message)}</div>`;
+    });
   }
   setTimeout(() => { $('hud').hidden = true; show('overScreen'); }, 900);
 }
@@ -666,14 +791,8 @@ function handleEvents() {
     } else if (ev.e === 'over') endGame();
   }
   sim.events.length = 0;
-  // tier unlocks and speed-ups
-  while (tierHit < TIERS.length && sim.score >= TIERS[tierHit].pts) {
-    const t = TIERS[tierHit]; tierHit++;
-    banner(`${esc(t.label)} unlocked!<small>${t.pts} points</small>`); sfx.tier(); buzz([40, 30, 40]);
-    for (let i = 0; i < 5; i++) burst(60 + Math.random() * 280, 120 + Math.random() * 200, ['#FBEB3C', '#00B5EA', '#ED763B', '#fff', '#E23B4E'], 18, 260);
-  }
   const p = CFG.phonePts(sim.t);
-  if (p !== ptsLevel && state === 'play') { ptsLevel = p; if (tierHit === 0 || p % 4 === 0) banner(`Faster!<small>${p} points per phone</small>`); }
+  if (p !== ptsLevel && state === 'play') { ptsLevel = p; if (p % 4 === 2) banner(`Faster!<small>${p} points per phone</small>`); }
 }
 
 /* ---------- Input: relative swipe anywhere on screen ---------- */
@@ -696,11 +815,53 @@ window.addEventListener('keyup', e => { if ((e.key === 'ArrowLeft' || e.key === 
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 window.addEventListener('blur', () => pause());
 
-$('playBtn').addEventListener('click', startGame);
-$('againBtn').addEventListener('click', startGame);
+$('playBtn').addEventListener('click', onPlay);
+$('againBtn').addEventListener('click', onPlay);
 $('homeBtn').addEventListener('click', goMenu);
 $('howBtn').addEventListener('click', () => openSheet('howSheet'));
-$('prizeBtn').addEventListener('click', () => openSheet('prizeSheet'));
+$('leaderBtn').addEventListener('click', openLeaderboard);
+$('playerChip').addEventListener('click', () => { savePlayer(null); best = 0; store.set('ssc-best', '0'); updateChip(); openRegister(); });
+
+async function openLeaderboard() {
+  openSheet('leaderSheet');
+  const list = $('lbList'), mine = $('lbMine');
+  if (player && player.rank) { mine.hidden = false; mine.innerHTML = `<span>You · ${esc(player.name)}</span><span>#${player.rank} · <b>${player.best}</b></span>`; } else mine.hidden = true;
+  try {
+    const r = await api('leaderboard', null, 7000);
+    list.innerHTML = r.top.length ? r.top.map(p => `<li><span class="rk">${p.rank}</span><span class="nm">${esc(p.name)}${p.city ? `<small>${esc(p.city)}</small>` : ''}</span><span class="sc">${p.score}</span></li>`).join('')
+      : '<li class="lb-empty">No scores yet. Be the first on the board!</li>';
+  } catch (e) { list.innerHTML = `<li class="lb-empty">${e.offline ? "Can't load the leaderboard right now." : esc(e.message)}</li>`; }
+}
+
+function openRegister() {
+  $('regErr').hidden = true; openSheet('regSheet');
+  setTimeout(() => { try { $('regName').focus(); } catch (e) {} }, 350);
+}
+$('regPhone').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10); });
+$('regForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = $('regName').value.trim(), email = $('regEmail').value.trim(), phone = $('regPhone').value.trim(), consent = $('regConsent').checked;
+  const err = m => { $('regErr').textContent = m; $('regErr').hidden = false; };
+  ['regName', 'regEmail', 'regPhone'].forEach(id => $(id).removeAttribute('aria-invalid'));
+  if (name.length < 2) { $('regName').setAttribute('aria-invalid', 'true'); return err('Please enter your name.'); }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { $('regEmail').setAttribute('aria-invalid', 'true'); return err('Please enter a valid email address.'); }
+  if (!/^[6-9]\d{9}$/.test(phone)) { $('regPhone').setAttribute('aria-invalid', 'true'); return err('Please enter your 10-digit mobile number.'); }
+  if (!consent) return err('Please tick the box to agree to the contest terms.');
+  $('regErr').hidden = true;
+  const btn = $('regSubmit'); btn.disabled = true; btn.textContent = 'Getting your location…';
+  const g = await getLocation();
+  if (g) { Object.assign(g, await cityFor(g)); lastGeo = g; }
+  btn.textContent = 'Saving…';
+  try {
+    const r = await api('register', Object.assign({ name, email, phone, consent: true }, g || {}), 10000);
+    savePlayer({ token: r.token, name: r.name, best: r.best, rank: r.rank, total: r.total });
+    best = Math.max(r.best || 0, 0); store.set('ssc-best', String(best));
+    updateChip(); $('regSheet').hidden = true; startGame();
+  } catch (ex) {
+    if (ex.offline) { err("Can't reach the server right now. Check your internet and try again."); }
+    else err(ex.message);
+  } finally { btn.disabled = false; btn.textContent = 'Start playing'; }
+});
 $('pauseBtn').addEventListener('click', pause);
 $('resumeBtn').addEventListener('click', resume);
 $('quitBtn').addEventListener('click', () => { show(null); sim.lives = 0; sim.over = true; endGame(); });
@@ -712,7 +873,11 @@ function frame(ts) {
   if (state === 'play' && sim) {
     acc += Math.min(0.1, (ts - lastTs) / 1000); lastTs = ts;
     if (keyDir) sim.setTarget(sim.x + keyDir * 60);
-    while (acc >= 1 / 60 && !sim.over) { sim.step(); acc -= 1 / 60; }
+    while (acc >= 1 / 60 && !sim.over) {
+      sim.target = Math.round(sim.target * 4) / 4;                       // recorded moves let the server re-check the score
+      if (sim.target !== rec.last) { rec.inputs.push(sim.tick + 1, sim.target); rec.last = sim.target; }
+      sim.step(); acc -= 1 / 60;
+    }
     handleEvents(); updateHud();
   }
   if (state === 'menu' && demo) { frame.dacc = (frame.dacc || 0) + realDt; while (frame.dacc >= 1 / 60) { demoStep(); frame.dacc -= 1 / 60; } }
