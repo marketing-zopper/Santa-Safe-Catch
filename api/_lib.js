@@ -9,7 +9,7 @@ const { Pool } = require('pg');
 let pool;
 function db() {
   if (!pool) {
-    const url = process.env.DATABASE_URL;
+    const url = (process.env.DATABASE_URL || '').trim().replace(/^["']|["']$/g, '');
     if (!url) throw httpError(500, 'Server is not configured (DATABASE_URL missing)');
     const local = /localhost|127\.0\.0\.1|host=\/|@\/|%2F/.test(url) || process.env.DB_NO_SSL === '1';
     pool = new Pool({ connectionString: url, max: 3, idleTimeoutMillis: 10000, ssl: local ? false : { rejectUnauthorized: false } });
