@@ -25,8 +25,10 @@ The top players when the campaign ends win prizes.
    - `TOKEN_SECRET` = any long random text (at least 32 characters). Keep it secret and don't change it during the campaign
    - `ADMIN_PASSWORD` = the password for `/admin`
    - `ADMIN_PASSWORD_REQUIRED` = `1` to switch the admin password on (it is off while testing)
-   - `BREVO_API_KEY` = Brevo → SMTP & API → API keys (sends the OTP and thank-you emails)
-   - `EMAIL_FROM` = sender address on a domain verified in Brevo, e.g. `christmas@zopper.com`
+   - Emails (pick one):
+     - Company mailbox, no DNS changes: `SMTP_HOST` (`smtp.gmail.com` for Google Workspace, `smtp.office365.com` for Microsoft 365), `SMTP_PORT` (`465` Google, `587` Microsoft), `SMTP_USER` (the mailbox), `SMTP_PASS` (its app password)
+     - Or Brevo: `BREVO_API_KEY` (needs DNS records on the sender's domain)
+   - `EMAIL_FROM` = sender address (with SMTP, leave empty to use the mailbox itself)
    - `EMAIL_FROM_NAME` = `Zopper Christmas Challenge` (optional)
    - `GAME_URL` = the public game link, used in the email "Play again" button
    - `KNOW_MORE_URL`, `TERMS_URL`, `CAMPAIGN_END` = links and closing date used in the emails

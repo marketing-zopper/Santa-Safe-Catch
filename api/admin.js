@@ -68,6 +68,15 @@ module.exports = handler(['GET', 'POST'], async (req, res) => {
   const u = new URL(req.url, 'http://x');
   const action = u.searchParams.get('action');
 
+  if (req.method === 'POST' && action === 'migrate') {
+    // Applies supabase/002_otp_email.sql (safe to run more than once)
+    const sql = require('./_migration002');
+    const dups = await q(`select lower(email) e, count(*)::int n from players group by 1 having count(*) > 1`);
+    if (dups.length) return send(res, 409, { error: 'Some emails are used by more than one player', dups });
+    await q(sql);
+    const [v] = await q(`select (select count(*)::int from information_schema.tables where table_name in ('otp_codes','email_log')) as tables`);
+    return send(res, 200, { ok: true, ...v });
+  }
   if (req.method === 'POST' && action === 'test-email') {
     // Sends a sample OTP email and a sample thank-you email, to check delivery
     const b = await readJson(req, 5_000);
