@@ -15,5 +15,6 @@ module.exports = handler(['GET'], async (req, res) => {
   } catch (e) { out.parseError = 'DATABASE_URL is not a valid URL'; }
   try { const [r] = await q('select current_user as u, (select count(*)::int from players) as players'); out.connected = true; out.dbUser = r.u; out.players = r.players; }
   catch (e) { out.connected = false; out.dbError = e.message; }
+  out.email = { brevoKey: !!(process.env.BREVO_API_KEY || '').trim(), from: (process.env.EMAIL_FROM || '').trim() || null, gameUrl: process.env.GAME_URL || null, knowMore: process.env.KNOW_MORE_URL || null, terms: process.env.TERMS_URL || null, campaignEnd: process.env.CAMPAIGN_END || null };
   send(res, 200, out);
 });

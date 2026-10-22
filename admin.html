@@ -209,11 +209,12 @@ async function loadStats() {
   const s = await call('action=stats');
   const gpsPct = s.players ? Math.round(s.located_gps / s.players * 100) : 0;
   $('kpis').innerHTML =
-    kpi('Players', nf.format(s.players), `+${nf.format(s.players_today)} today`) +
+    kpi('Players', nf.format(s.players), `+${nf.format(s.players_today)} today · ${nf.format(s.verified || 0)} verified`) +
     kpi('Games played', nf.format(s.games), `+${nf.format(s.games_today)} today`) +
     kpi('Top score', nf.format(s.top_score), 'Current #1') +
     kpi('Average score', nf.format(s.avg_score), 'Per game') +
     kpi('GPS location shared', gpsPct + '%', `${nf.format(s.located_gps)} of ${nf.format(s.players)} players`) +
+    kpi('Emails sent', nf.format(s.emails_sent || 0), s.emails_failed ? `${nf.format(s.emails_failed)} failed` : `${nf.format(s.thanks_sent || 0)} thank-you emails`, s.emails_failed > 0) +
     kpi('Flagged games', nf.format(s.flagged_games), s.flagged_games ? 'Review in the Games tab' : 'Nothing suspicious', s.flagged_games > 0);
   barChart($('chPlayers'), s.by_day, 'players', 'Players');
   barChart($('chGames'), s.by_day, 'games', 'Games');
@@ -234,9 +235,9 @@ const loc = r => {
   return `${esc(city)} ${city || r.lat != null ? src : ''}${map}`;
 };
 const COLS = {
-  leaderboard: [['Rank', r => `<span class="rank">${r.rank}</span>`, 'num'], ['Name', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Email', r => esc(r.email)],
+  leaderboard: [['Rank', r => `<span class="rank">${r.rank}</span>`, 'num'], ['Name', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Email', r => esc(r.email) + (r.verified_at ? ' <span class="pill gps" title="Email verified">Verified</span>' : ' <span class="pill net">Not verified</span>')],
     ['Best', r => nf.format(r.best_score), 'num'], ['Reached', r => dt(r.best_at)], ['Games', r => r.games_played, 'num'], ['Location', loc], ['', actions, 'act']],
-  players: [['Joined', r => dt(r.created_at)], ['Name', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Email', r => esc(r.email)],
+  players: [['Joined', r => dt(r.created_at)], ['Name', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Email', r => esc(r.email) + (r.verified_at ? ' <span class="pill gps">Verified</span>' : ' <span class="pill net">Not verified</span>')], ['Thank-you email', r => r.first_email_sent_at ? 'Sent ' + dt(r.first_email_sent_at) : '–'],
     ['Best', r => nf.format(r.best_score), 'num'], ['Rank', r => r.rank || '–', 'num'], ['Games', r => r.games_played, 'num'], ['Last played', r => dt(r.last_seen_at)], ['Location', loc], ['', actions, 'act']],
   games: [['When', r => dt(r.created_at)], ['Player', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Score', r => nf.format(r.score), 'num'],
     ['Length', r => r.duration_s != null ? Math.round(r.duration_s) + 's' : '', 'num'], ['Phones caught', r => r.phones_caught, 'num'],

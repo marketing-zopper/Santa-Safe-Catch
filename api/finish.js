@@ -2,6 +2,7 @@
 // Re-runs the game on the server from the seed + recorded moves; that score is what counts.
 const { q, handler, readJson, send, verify, httpError, ipGeo, clip, num } = require('./_lib');
 const { replay } = require('../engine.js');
+const { sendEmail, thanksEmail } = require('./_email');
 
 const MAX_TICKS = 60 * 60 * 45; // 45 minutes of play
 
@@ -43,5 +44,18 @@ module.exports = handler(['POST'], async (req, res) => {
     if (/session_used_or_missing/.test(e.message)) throw httpError(409, 'This game was already saved');
     throw e;
   }
-  send(res, 200, { score: r.score, best: st.out_best, rank: st.out_rank == null ? null : Number(st.out_rank), total: Number(st.out_total), flagged });
+  // First finished game → thank-you email (sent once; if sending fails it is retried after the next game)
+  let emailed = false;
+  const [claim] = await q(`update players set first_email_sent_at = now() where id = $1 and first_email_sent_at is null returning name, email`, [playerId]);
+  if (claim) {
+    try {
+      const msg = thanksEmail({ name: claim.name, score: r.score, best: st.out_best, rank: st.out_rank == null ? null : Number(st.out_rank), total: Number(st.out_total) });
+      await sendEmail({ to: claim.email, toName: claim.name, ...msg, kind: 'thanks', playerId });
+      emailed = true;
+    } catch (e) {
+      await q('update players set first_email_sent_at = null where id = $1', [playerId]);
+      if (!e.emailFailed) console.error(e);
+    }
+  }
+  send(res, 200, { emailed, score: r.score, best: st.out_best, rank: st.out_rank == null ? null : Number(st.out_rank), total: Number(st.out_total), flagged });
 });

@@ -258,7 +258,79 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
 .play-btn.reg-go[disabled]::after{animation-duration:1.2s}
 .reg-note{margin:0;display:flex;gap:8px;align-items:flex-start;font-size:12.5px;font-weight:600;line-height:1.38;color:#5C5E88}
 .reg-note svg{width:18px;height:18px;flex:none;color:var(--berry);margin-top:1px}
-@media (max-height:700px){.reg-head{padding:16px 18px 24px}.reg-panel .reg-title span{font-size:36px}.reg-perks{display:none}.reg-santa{height:120px;width:110px}.reg-santa img{height:160px}}
+@media (max-height:700px){.reg-head{padding:16px 18px 24px}.reg-panel .reg-title span{font-size:36px}.reg-perks{display:none}.reg-santa{height:112px;width:104px;right:44px}.reg-santa img{height:160px}}
+/* ---------- Loader ---------- */
+.loader{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  background:radial-gradient(circle at 50% 38%,#2B4AA8,#1D1E5A 45%,#0E0F2E 100%);transition:opacity .45s ease;padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.loader.out{opacity:0;pointer-events:none}
+.loader-stage{position:relative;width:210px;height:176px}
+.loader-stage img{position:absolute;left:0;bottom:0;width:210px;height:auto;animation:lbob 1.4s ease-in-out infinite;transform-origin:30% 100%}
+@keyframes lbob{50%{transform:translateY(-4px) scaleY(1.01)}}
+.drop{position:absolute;left:58px;top:-30px;width:14px;height:24px;border-radius:4px;background:linear-gradient(160deg,#5AD6FA,#2E4BB8);border:2.5px solid var(--ink);opacity:0;animation:ldrop 1.5s cubic-bezier(.5,0,.9,.6) infinite}
+.drop.d2{left:40px;animation-delay:.5s;background:linear-gradient(160deg,#FFE36B,#E5A800)}
+.drop.d3{left:76px;animation-delay:1s;background:linear-gradient(160deg,#FFA36E,#ED763B)}
+@keyframes ldrop{0%{transform:translateY(0) rotate(-20deg);opacity:0}15%{opacity:1}75%{transform:translateY(96px) rotate(15deg);opacity:1}82%,100%{transform:translateY(100px) scale(.4);opacity:0}}
+.loader-title{font-family:var(--font-display);font-size:24px;color:#fff;text-align:center;line-height:1}
+.loader-title span{display:block;font-size:40px;color:var(--lemon);text-shadow:2px 0 0 var(--ink),-2px 0 0 var(--ink),0 2px 0 var(--ink),0 -2px 0 var(--ink),0 5px 0 var(--orange),0 7px 0 var(--ink)}
+.loader-bar{width:min(64vw,240px);height:14px;border-radius:99px;background:rgba(255,255,255,.12);border:3px solid var(--ink);overflow:hidden;box-shadow:0 3px 0 var(--ink)}
+.loader-bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(-45deg,var(--lemon) 0 10px,#FFD43B 10px 20px);border-radius:99px;transition:width .25s ease}
+.loader-tip{margin:0;color:var(--almond);font-weight:700;font-size:14px;opacity:.9}
+
+/* ---------- Intro ---------- */
+.intro{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(14,15,46,.94),rgba(20,21,58,.86) 60%,rgba(29,30,90,.92))}
+.intro[hidden]{display:none!important}
+.intro-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(18px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 18px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;align-items:center}
+.intro-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:4px}
+.intro-hero .logo-main{font-size:clamp(50px,16vw,74px)}
+.intro-sub{margin:14px 0 0;max-width:320px;color:var(--almond);font-weight:700;font-size:16px;line-height:1.35;text-shadow:0 2px 0 var(--ink)}
+.intro-card{width:100%;max-width:420px;background:var(--almond);color:var(--ink);border:3px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);padding:16px 16px 14px}
+.intro-card h2{margin:0 0 10px;font-family:var(--font-display);font-weight:400;font-size:24px;color:var(--berry);text-shadow:0 2px 0 var(--ink)}
+.intro-steps{list-style:none;margin:0;padding:0;counter-reset:s;display:flex;flex-direction:column;gap:10px}
+.intro-steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;column-gap:10px;align-items:start}
+.intro-steps li::before{content:counter(s);grid-row:span 2;width:32px;height:32px;border-radius:50%;background:var(--cyan);border:2.5px solid var(--ink);color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-size:17px}
+.intro-steps b{font-family:var(--font-display);font-weight:400;font-size:18px;line-height:1.1}
+.intro-steps span{font-size:14px;font-weight:600;line-height:1.35;color:#3A3C66}
+.intro-prizes .prize-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.intro-prizes .prize-list li{display:flex;align-items:center;gap:12px;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:9px 12px}
+.intro-prizes .prize-list li:nth-child(1){background:linear-gradient(120deg,#FFE27A,#FFB067)}
+.intro-prizes .medal{flex:none;width:36px;height:36px;border-radius:50%;border:2.5px solid var(--ink);display:grid;place-items:center;font-family:var(--font-display);font-size:14px;background:#fff}
+.intro-prizes li:nth-child(1) .medal{background:var(--lemon)}.intro-prizes li:nth-child(2) .medal{background:#E3E7F5}.intro-prizes li:nth-child(3) .medal{background:#FFC9A3}
+.intro-prizes .pz b{display:block;font-family:var(--font-display);font-weight:400;font-size:17px;line-height:1.1}
+.intro-prizes .pz small{font-size:13px;font-weight:600;color:#4A4C78}
+.intro-dates{margin:10px 0 0;font-size:13px;font-weight:700;color:#4A4C78}
+.intro-dates:empty{display:none}
+.intro-fine{margin:0;font-size:13px}
+.intro-fine a{color:var(--almond);font-weight:700}
+.intro-fine a:not([href]){display:none}
+.intro-actions{display:flex;gap:10px;align-items:center;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:rgba(14,15,46,.85);border-top:1px solid rgba(255,255,255,.08)}
+.intro-more{flex:0 0 auto;height:60px;text-decoration:none;padding:0 16px}
+.intro-more:not([href]){display:none}
+.play-btn.intro-go{flex:1;width:auto;height:64px;font-size:clamp(22px,7vw,30px);animation:none}
+.play-btn.intro-go svg{width:26px;height:26px}
+
+/* ---------- Sign-up modes, OTP ---------- */
+.reg-panel .reg-title i{font-style:normal}
+.reg-back{position:absolute;top:14px;left:14px;width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,255,255,.6);background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:3;padding:0}
+.reg-back svg{width:20px;height:20px}
+.reg-back[hidden]{display:none}
+.reg-panel.has-back .reg-kicker{margin-left:48px}
+.reg-lead{margin:4px 0 0;font-size:15px;font-weight:600;line-height:1.4;color:#3A3C66}
+.reg-lead b{color:var(--ink);word-break:break-all}
+.reg-switch{margin:0;text-align:center;font-size:14px;font-weight:700;color:#4A4C78}
+.linkish{border:0;background:none;padding:2px 4px;font:800 14px var(--font-body);color:var(--sky);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkish[disabled]{color:#9AA0C8;text-decoration:none;cursor:default}
+.linkish.practice{align-self:center;font-size:13px}
+.otp-box{position:relative;height:66px}
+.otp-box input{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;z-index:2;cursor:text}
+.otp-cells{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;height:100%}
+.otp-cells span{display:grid;place-items:center;background:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);font-family:var(--font-display);font-size:30px;color:var(--ink)}
+.otp-box.focus .otp-cells span.cur{border-color:var(--cyan);box-shadow:0 4px 0 var(--cyan),0 0 0 4px rgba(0,181,234,.18)}
+.otp-box.focus .otp-cells span.cur:empty::after{content:"";width:2px;height:28px;background:var(--cyan);animation:blink 1s steps(2) infinite}
+.otp-box.bad .otp-cells span{border-color:var(--berry);box-shadow:0 4px 0 var(--berry);animation:shakex .35s}
+@keyframes blink{50%{opacity:0}}
+@keyframes shakex{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.otp-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+@media (prefers-reduced-motion:reduce){.loader-stage img,.drop,.otp-box.bad .otp-cells span{animation:none}.drop{display:none}}
 </style>
 </head>
 <body>
@@ -286,6 +358,44 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
   <div id="banner"></div>
   <div id="count"></div>
 
+  <!-- Loading -->
+  <div class="loader" id="loader">
+    <div class="loader-stage" aria-hidden="true"><img id="loaderSanta" alt=""><i class="drop d1"></i><i class="drop d2"></i><i class="drop d3"></i></div>
+    <div class="loader-title">Santa's <span>Safe Catch</span></div>
+    <div class="loader-bar" role="progressbar" aria-label="Loading"><i id="loaderFill"></i></div>
+    <p class="loader-tip" id="loaderTip">Warming up the sleigh…</p>
+  </div>
+
+  <!-- Intro (new players only) -->
+  <div class="intro" id="introScreen" hidden>
+    <div class="intro-scroll">
+      <div class="intro-hero">
+        <div class="logo-tag">Zopper Christmas Challenge</div>
+        <div class="logo-ribbon"><span>Santa's</span></div>
+        <div class="logo-main"><span>Safe</span><span>Catch</span></div>
+        <p class="intro-sub">Catch falling phones, climb the leaderboard, win Christmas prizes.</p>
+      </div>
+      <section class="intro-card">
+        <h2>How it works</h2>
+        <ol class="intro-steps">
+          <li><b>Play</b><span>Swipe left and right to move Santa and catch the phones in his sack before they crack.</span></li>
+          <li><b>Climb</b><span>Play as many times as you like. Your best score goes on the leaderboard.</span></li>
+          <li><b>Win</b><span>The top players when the challenge ends win prizes from Zopper.</span></li>
+        </ol>
+      </section>
+      <section class="intro-card intro-prizes">
+        <h2>Prizes</h2>
+        <ul class="prize-list" id="introPrizes"></ul>
+        <p class="intro-dates" id="introDates"></p>
+      </section>
+      <p class="intro-fine"><a id="termsLink" target="_blank" rel="noopener">Contest terms &amp; conditions</a></p>
+    </div>
+    <div class="intro-actions">
+      <a class="pill-btn intro-more" id="knowMore" target="_blank" rel="noopener">Know more</a>
+      <button class="play-btn intro-go" id="introContinue"><span>Continue</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </div>
+
   <!-- Start: game menu (the live scene with Santa shows through underneath) -->
   <div class="menu" id="startScreen">
     <div class="menu-bar">
@@ -304,7 +414,7 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
         <button class="pill-btn" id="howBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#00B5EA"/><path d="M9.2 9.3a2.9 2.9 0 0 1 5.6 1c0 2-2.8 2.3-2.8 4" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.4" fill="#fff"/></svg>How to play</button>
         <button class="pill-btn" id="leaderBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="12" width="6" height="9" rx="1.5" fill="#00B5EA"/><rect x="9" y="6" width="6" height="15" rx="1.5" fill="#FBEB3C"/><rect x="16" y="9" width="6" height="12" rx="1.5" fill="#ED763B"/><path d="M12 1.8l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2L9.1 4l2-.3z" fill="#E23B4E"/></svg>Leaderboard</button>
       </div>
-      <button class="player-chip" id="playerChip" hidden>Playing as <b id="playerName"></b><span>Not you?</span></button>
+      <button class="player-chip" id="playerChip" hidden>Playing as <b id="playerName"></b><span>Switch player</span></button>
     </div>
   </div>
 
@@ -347,8 +457,9 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
       <div class="reg-head">
         <div class="reg-santa" aria-hidden="true"><img id="regSantaImg" alt=""></div>
         <button class="sheet-x" data-close aria-label="Close">×</button>
+        <button class="reg-back" id="regBack" type="button" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="reg-kicker">Zopper Christmas Challenge</div>
-        <h2 class="reg-title" id="regTitle">Join the<span>challenge</span></h2>
+        <h2 class="reg-title" id="regTitle"><i id="regT1">Join the</i><span id="regT2">challenge</span></h2>
         <ul class="reg-perks">
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v3h3v2a5 5 0 0 1-5 5h-.3A5 5 0 0 1 13 15.6V18h3v3H8v-3h3v-2.4A5 5 0 0 1 9.3 13H9a5 5 0 0 1-5-5V6h3zm-1 5a3 3 0 0 0 2 2.8V8zm12 0h-1v2.8A3 3 0 0 0 18 8z" fill="currentColor"/></svg>Top scorers win prizes</li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 0 7.7 10h-2.1A6 6 0 1 1 12 6c1.7 0 3.1.7 4.2 1.8L13 11h7V4l-2.4 2.4A8 8 0 0 0 12 4z" fill="currentColor"/></svg>Play as often as you like</li>
@@ -363,8 +474,29 @@ h1 span{display:block;color:var(--sky);font-size:30px;-webkit-text-stroke:0;text
           <span class="rwrap"><span class="cc"><svg viewBox="0 0 24 16" aria-hidden="true"><rect width="24" height="5.33" fill="#FF9933"/><rect y="5.33" width="24" height="5.34" fill="#fff"/><rect y="10.67" width="24" height="5.33" fill="#138808"/><circle cx="12" cy="8" r="2" fill="none" stroke="#000080" stroke-width=".8"/></svg>+91</span><input id="regPhone" name="phone" type="tel" autocomplete="tel-national" inputmode="numeric" maxlength="10" required placeholder="98765 43210"></span></label>
         <label class="rcheck"><input id="regConsent" type="checkbox" required><span class="box" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">I agree that Zopper may store my name, email, mobile number, scores and location to run this contest and contact me about it.</span></label>
         <p class="form-err" id="regErr" role="alert" hidden></p>
-        <button class="play-btn reg-go" id="regSubmit" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z" fill="currentColor"/></svg><span>Start playing</span></button>
+        <button class="play-btn reg-go" id="regSubmit" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5L21 3l-6.5 18-3.2-7.3z" fill="currentColor"/></svg><span>Send code</span></button>
+        <p class="reg-switch">Already playing on another phone? <button type="button" class="linkish" data-mode="login">Log in</button></p>
         <p class="reg-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg>Your phone will ask to share your location so we know which city you're playing from. You can say no and still play.</p>
+        <button type="button" class="linkish practice" hidden>Play a practice round instead (score won't be saved)</button>
+      </form>
+      <form id="loginForm" class="reg-form" novalidate hidden>
+        <p class="reg-lead">Enter the email you signed up with. We'll email you a code to log back in, and your scores come with you.</p>
+        <label class="rfield"><span class="rlbl">Email</span>
+          <span class="rwrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3" fill="currentColor"/><path d="M4.5 7.5l7.5 5.5 7.5-5.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><input id="loginEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required placeholder="you@example.com"></span></label>
+        <p class="form-err" id="loginErr" role="alert" hidden></p>
+        <button class="play-btn reg-go" id="loginSubmit" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5L21 3l-6.5 18-3.2-7.3z" fill="currentColor"/></svg><span>Send code</span></button>
+        <p class="reg-switch">New here? <button type="button" class="linkish" data-mode="signup">Sign up</button></p>
+        <button type="button" class="linkish practice" hidden>Play a practice round instead (score won't be saved)</button>
+      </form>
+      <form id="otpForm" class="reg-form" novalidate hidden>
+        <p class="reg-lead">We've sent a 6-digit code to <b id="otpTo"></b>. It can take a minute to arrive, so check your spam folder too.</p>
+        <div class="otp-box">
+          <input id="otpInput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" aria-label="6-digit code">
+          <div class="otp-cells" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <p class="form-err" id="otpErr" role="alert" hidden></p>
+        <button class="play-btn reg-go" id="otpSubmit" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Verify</span></button>
+        <div class="otp-row"><button type="button" class="linkish" id="otpResend" disabled>Resend code</button><button type="button" class="linkish" id="otpChange">Change email</button></div>
       </form>
     </div>
   </div>
@@ -502,6 +634,18 @@ const { Sim, CFG } = window.SantaEngine;
 const W = CFG.W, H = CFG.H;
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* ---------- Campaign content (edit here) ---------- */
+const CAMPAIGN = {
+  knowMoreUrl: 'https://www.zopper.com',          // TODO: replace with the campaign page
+  termsUrl: '',                                   // TODO: contest T&Cs page (link hidden until set)
+  dates: 'Challenge runs till 31 December 2026. Winners announced in January.',   // TODO: confirm dates
+  prizes: [                                       // TODO: real prizes
+    { title: 'Grand prize', note: 'For the #1 player on the leaderboard' },
+    { title: 'Second prize', note: 'For the #2 player' },
+    { title: 'Third prize', note: 'For the #3 player' },
+  ],
+};
 
 /* ---------- Storage (per-device best, optional) ---------- */
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
@@ -731,7 +875,7 @@ let sim = null, state = 'menu', acc = 0, lastTs = 0, ptsLevel = 0, wake = null, 
 const $ = id => document.getElementById(id);
 const scoreEl = $('score'), livesEl = $('lives');
 
-function show(id) { ['startScreen', 'pauseScreen', 'overScreen'].forEach(s => $(s).hidden = s !== id); }
+function show(id) { ['startScreen', 'pauseScreen', 'overScreen', 'introScreen'].forEach(s => $(s).hidden = s !== id); }
 /* attract mode: Santa plays by himself behind the menu */
 let demo = null;
 function newDemo() { demo = new Sim((Math.random() * 1e9) >>> 0); demo.lives = 1e6; }
@@ -754,6 +898,7 @@ function goMenu() { state = 'menu'; sim = null; $('hud').hidden = true; parts = 
 function openSheet(id) { $(id).hidden = false; const b = $(id).querySelector('.sheet-x'); b && b.focus(); }
 document.querySelectorAll('.sheet').forEach(sh => sh.addEventListener('click', e => {
   const t = e.target.closest('[data-close]');
+  if (e.target === sh && sh.dataset.locked === '1') return;
   if (e.target === sh || t) { sh.hidden = true; if (t && t.hasAttribute('data-play')) onPlay(); }
 }));
 function banner(html) { const b = $('banner'); b.innerHTML = html; b.classList.remove('show'); void b.offsetWidth; b.classList.add('show'); }
@@ -764,7 +909,7 @@ function updateHud(force) {
   if (force || hudLives !== sim.lives) { hudLives = sim.lives; livesEl.innerHTML = [0, 1, 2].map(i => heartSVG(i < sim.lives)).join(''); }
 }
 
-function onPlay() { audio(); if (player) startGame(); else openRegister(); }
+function onPlay() { audio(); if (player) startGame(); else showIntro(); }
 async function startGame() {
   if (starting) return; starting = true;
   audio(); document.querySelectorAll('.sheet').forEach(sh => sh.hidden = true);
@@ -772,7 +917,7 @@ async function startGame() {
   if (player) {
     try { const r = await api('start', { token: player.token }, 7000); session = r.sessionId; seed = r.seed; }
     catch (e) {
-      if (e.status === 401) { savePlayer(null); starting = false; updateChip(); openRegister(); return; }
+      if (e.status === 401) { savePlayer(null); starting = false; updateChip(); showIntro(); return; }
       practice = true; toast(e.offline ? "Can't reach the server. This is a practice round and won't be saved." : e.message);
     }
   }
@@ -875,7 +1020,7 @@ $('againBtn').addEventListener('click', onPlay);
 $('homeBtn').addEventListener('click', goMenu);
 $('howBtn').addEventListener('click', () => openSheet('howSheet'));
 $('leaderBtn').addEventListener('click', openLeaderboard);
-$('playerChip').addEventListener('click', () => { savePlayer(null); best = 0; store.set('ssc-best', '0'); updateChip(); openRegister(); });
+$('playerChip').addEventListener('click', () => { savePlayer(null); best = 0; store.set('ssc-best', '0'); updateChip(); openRegister('login', false); });
 
 async function openLeaderboard() {
   openSheet('leaderSheet');
@@ -883,41 +1028,166 @@ async function openLeaderboard() {
   if (player && player.rank) { mine.hidden = false; mine.innerHTML = `<span>You · ${esc(player.name)}</span><span>#${player.rank} · <b>${player.best}</b></span>`; } else mine.hidden = true;
   try {
     const r = await api('leaderboard', null, 7000);
-    list.innerHTML = r.top.length ? r.top.map(p => `<li><span class="rk">${p.rank}</span><span class="nm">${esc(p.name)}${p.city ? `<small>${esc(p.city)}</small>` : ''}</span><span class="sc">${p.score}</span></li>`).join('')
+    list.innerHTML = r.top.length ? r.top.map(p => `<li><span class="rk">${p.rank}</span><span class="nm">${esc(p.name)}</span><span class="sc">${p.score}</span></li>`).join('')
       : '<li class="lb-empty">No scores yet. Be the first on the board!</li>';
   } catch (e) { list.innerHTML = `<li class="lb-empty">${e.offline ? "Can't load the leaderboard right now." : esc(e.message)}</li>`; }
 }
 
-function openRegister() {
-  const ri = $('regSantaImg'); if (!ri.src) ri.src = SPR.img.src;
-  $('regErr').hidden = true; openSheet('regSheet');
+/* ---------- Onboarding: intro → sign-up / log-in → email OTP ---------- */
+function showIntro() {
+  goMenu(); show('introScreen');
+  $('introScreen').querySelector('.intro-scroll').scrollTop = 0;
 }
-['regName', 'regEmail', 'regPhone', 'regConsent'].forEach(id => $(id).addEventListener('input', () => { $(id).removeAttribute('aria-invalid'); $('regErr').hidden = true; }));
+(function fillIntro() {
+  $('introPrizes').innerHTML = CAMPAIGN.prizes.map((p, i) => `<li><span class="medal">${['1st', '2nd', '3rd'][i] || (i + 1) + 'th'}</span><span class="pz"><b>${esc(p.title)}</b><small>${esc(p.note)}</small></span></li>`).join('');
+  $('introDates').textContent = CAMPAIGN.dates || '';
+  if (CAMPAIGN.knowMoreUrl) $('knowMore').href = CAMPAIGN.knowMoreUrl;
+  if (CAMPAIGN.termsUrl) $('termsLink').href = CAMPAIGN.termsUrl;
+})();
+$('introContinue').addEventListener('click', () => { audio(); openRegister('signup', true); });
+
+let regMode = 'signup', otpReq = null, otpId = null, resendTimer = null;
+const TITLES = { signup: ['Join the', 'challenge'], login: ['Welcome', 'back'], otp: ['Check your', 'email'] };
+function setRegMode(mode) {
+  regMode = mode;
+  $('regForm').hidden = mode !== 'signup'; $('loginForm').hidden = mode !== 'login'; $('otpForm').hidden = mode !== 'otp';
+  $('regT1').textContent = TITLES[mode][0]; $('regT2').textContent = TITLES[mode][1];
+  ['regErr', 'loginErr', 'otpErr'].forEach(id => $(id).hidden = true);
+  document.querySelectorAll('#regSheet .practice').forEach(b => b.hidden = true);
+  $('regSheet').querySelector('.sheet-panel').scrollTop = 0;
+  if (mode === 'otp') setTimeout(() => { try { $('otpInput').focus(); } catch (e) {} }, 250);
+}
+function openRegister(mode, onboarding) {
+  const ri = $('regSantaImg'); if (!ri.src) ri.src = SPR.img.src;
+  const sh = $('regSheet');
+  sh.dataset.locked = onboarding ? '1' : '';
+  sh.dataset.onboarding = onboarding ? '1' : '';
+  sh.querySelector('.sheet-x').hidden = !!onboarding;
+  $('regBack').hidden = !onboarding;
+  sh.querySelector('.sheet-panel').classList.toggle('has-back', !!onboarding);
+  setRegMode(mode || 'signup');
+  openSheet('regSheet');
+}
+$('regBack').addEventListener('click', () => {
+  if (regMode === 'otp') return setRegMode(otpReq && otpReq.mode === 'login' ? 'login' : 'signup');
+  $('regSheet').hidden = true;                 // back to the intro page behind it
+});
+document.querySelectorAll('#regSheet [data-mode]').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.mode === 'login' && $('regEmail').value) $('loginEmail').value = $('regEmail').value;
+  setRegMode(b.dataset.mode);
+}));
+document.querySelectorAll('#regSheet .practice').forEach(b => b.addEventListener('click', () => {
+  $('regSheet').hidden = true; savePlayer(null); startGame();
+}));
+['regName', 'regEmail', 'regPhone', 'regConsent', 'loginEmail'].forEach(id => $(id).addEventListener('input', () => {
+  $(id).removeAttribute('aria-invalid'); $('regErr').hidden = true; $('loginErr').hidden = true;
+}));
 $('regPhone').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10); });
+
+const EMAIL_OK = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+function showErr(id, msg, offline) {
+  $(id).textContent = msg; $(id).hidden = false;
+  const form = $(id).closest('form'), pr = form && form.querySelector('.practice');
+  if (pr) pr.hidden = !offline;
+}
+function busy(btnId, label) { const b = $(btnId), l = b.querySelector('span'); b.dataset.label = b.dataset.label || l.textContent; b.disabled = !!label; l.textContent = label || b.dataset.label; }
+
+async function requestCode(req, errId, btnId) {
+  busy(btnId, 'Sending code…');
+  try {
+    const r = await api('otp-send', req, 15000);
+    otpReq = req; otpId = r.otpId;
+    $('otpTo').textContent = r.email;
+    clearOtp(); setRegMode('otp'); startResend(r.resendIn || 30);
+    if (r.devCode) console.info('[dev] OTP', r.devCode);
+  } catch (e) {
+    showErr(errId, e.offline ? "Can't reach the server right now. Check your internet and try again." : e.message, e.offline);
+  } finally { busy(btnId, null); }
+}
 $('regForm').addEventListener('submit', async e => {
   e.preventDefault();
   const name = $('regName').value.trim(), email = $('regEmail').value.trim(), phone = $('regPhone').value.trim(), consent = $('regConsent').checked;
-  const err = m => { $('regErr').textContent = m; $('regErr').hidden = false; };
   ['regName', 'regEmail', 'regPhone'].forEach(id => $(id).removeAttribute('aria-invalid'));
-  if (name.length < 2) { $('regName').setAttribute('aria-invalid', 'true'); return err('Please enter your name.'); }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { $('regEmail').setAttribute('aria-invalid', 'true'); return err('Please enter a valid email address.'); }
-  if (!/^[6-9]\d{9}$/.test(phone)) { $('regPhone').setAttribute('aria-invalid', 'true'); return err('Please enter your 10-digit mobile number.'); }
-  if (!consent) return err('Please tick the box to agree to the contest terms.');
-  $('regErr').hidden = true;
-  const btn = $('regSubmit'), lbl = btn.querySelector('span'); btn.disabled = true; lbl.textContent = 'Finding you…';
+  if (name.length < 2) { $('regName').setAttribute('aria-invalid', 'true'); return showErr('regErr', 'Please enter your name.'); }
+  if (!EMAIL_OK(email)) { $('regEmail').setAttribute('aria-invalid', 'true'); return showErr('regErr', 'Please enter a valid email address.'); }
+  if (!/^[6-9]\d{9}$/.test(phone)) { $('regPhone').setAttribute('aria-invalid', 'true'); return showErr('regErr', 'Please enter your 10-digit mobile number.'); }
+  if (!consent) return showErr('regErr', 'Please tick the box to agree to the contest terms.');
+  busy('regSubmit', 'Finding you…');
   const g = await getLocation();
   if (g) { Object.assign(g, await cityFor(g)); lastGeo = g; }
-  lbl.textContent = 'Saving…';
+  await requestCode(Object.assign({ mode: 'signup', name, email, phone, consent: true }, g || {}), 'regErr', 'regSubmit');
+});
+$('loginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = $('loginEmail').value.trim();
+  if (!EMAIL_OK(email)) { $('loginEmail').setAttribute('aria-invalid', 'true'); return showErr('loginErr', 'Please enter a valid email address.'); }
+  requestCode({ mode: 'login', email }, 'loginErr', 'loginSubmit');
+});
+
+/* code entry: one real input drawn as 6 boxes */
+const otpIn = $('otpInput'), otpCells = [...document.querySelectorAll('.otp-cells span')], otpBox = otpIn.parentElement;
+function drawOtp() {
+  const v = otpIn.value;
+  otpCells.forEach((c, i) => { c.textContent = v[i] || ''; c.classList.toggle('cur', i === Math.min(v.length, 5)); });
+}
+function clearOtp() { otpIn.value = ''; otpBox.classList.remove('bad'); drawOtp(); }
+otpIn.addEventListener('input', () => {
+  otpIn.value = otpIn.value.replace(/\D/g, '').slice(0, 6); otpBox.classList.remove('bad'); $('otpErr').hidden = true; drawOtp();
+  if (otpIn.value.length === 6) $('otpForm').requestSubmit ? $('otpForm').requestSubmit() : $('otpSubmit').click();
+});
+otpIn.addEventListener('focus', () => otpBox.classList.add('focus'));
+otpIn.addEventListener('blur', () => otpBox.classList.remove('focus'));
+function startResend(sec) {
+  clearInterval(resendTimer); let left = sec; const b = $('otpResend');
+  const tick = () => { if (left <= 0) { clearInterval(resendTimer); b.disabled = false; b.textContent = 'Resend code'; } else { b.disabled = true; b.textContent = `Resend code in ${left}s`; left--; } };
+  tick(); resendTimer = setInterval(tick, 1000);
+}
+$('otpResend').addEventListener('click', async () => {
+  if (!otpReq) return;
+  $('otpResend').disabled = true;
+  try { const r = await api('otp-send', otpReq, 15000); otpId = r.otpId; clearOtp(); startResend(r.resendIn || 30); toast('New code sent. Check your email.'); if (r.devCode) console.info('[dev] OTP', r.devCode); }
+  catch (e) { showErr('otpErr', e.offline ? "Can't reach the server right now." : e.message); $('otpResend').disabled = false; }
+});
+$('otpChange').addEventListener('click', () => setRegMode(otpReq && otpReq.mode === 'login' ? 'login' : 'signup'));
+$('otpForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (otpIn.value.length !== 6) { otpBox.classList.add('bad'); return showErr('otpErr', 'Enter the 6-digit code from the email.'); }
+  busy('otpSubmit', 'Checking…');
   try {
-    const r = await api('register', Object.assign({ name, email, phone, consent: true }, g || {}), 10000);
+    const r = await api('otp-verify', { otpId, code: otpIn.value }, 12000);
+    clearInterval(resendTimer);
     savePlayer({ token: r.token, name: r.name, best: r.best, rank: r.rank, total: r.total });
     best = Math.max(r.best || 0, 0); store.set('ssc-best', String(best));
-    updateChip(); $('regSheet').hidden = true; startGame();
+    $('regSheet').hidden = true; goMenu();
+    toast(r.best > 0 ? `Welcome back, ${r.name.split(' ')[0]}! Your best score: ${r.best}.` : `You're in, ${r.name.split(' ')[0]}! Tap Play to start.`);
   } catch (ex) {
-    if (ex.offline) { err("Can't reach the server right now. Check your internet and try again."); }
-    else err(ex.message);
-  } finally { btn.disabled = false; lbl.textContent = 'Start playing'; }
+    otpBox.classList.add('bad');
+    showErr('otpErr', ex.offline ? "Can't reach the server right now. Try again." : ex.message);
+    if (!ex.offline) { otpIn.value = ''; drawOtp(); }
+  } finally { busy('otpSubmit', null); }
 });
+
+/* ---------- Loading screen ---------- */
+function runLoader() {
+  const fill = $('loaderFill'), tips = ['Warming up the sleigh…', 'Wrapping the phones…', 'Polishing the sack…'];
+  $('loaderSanta').src = SPR.img.src;
+  const t0 = performance.now(); let p = 0, tip = 0;
+  const tipT = setInterval(() => { tip = (tip + 1) % tips.length; $('loaderTip').textContent = tips[tip]; }, 900);
+  const bump = to => { p = Math.max(p, to); fill.style.width = p + '%'; };
+  bump(15);
+  const imgReady = new Promise(r => SPR.img.complete && SPR.img.naturalWidth ? r() : (SPR.img.onload = r, SPR.img.onerror = r)).then(() => bump(55));
+  const fontsReady = (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => bump(85));
+  const timeout = new Promise(r => setTimeout(r, 4000));
+  Promise.race([Promise.all([imgReady, fontsReady]), timeout]).then(() => {
+    const wait = Math.max(0, 1300 - (performance.now() - t0));
+    setTimeout(() => {
+      bump(100); clearInterval(tipT);
+      if (player) goMenu(); else showIntro();
+      setTimeout(() => { $('loader').classList.add('out'); setTimeout(() => $('loader').hidden = true, 500); }, 250);
+    }, wait);
+  });
+}
+
 $('pauseBtn').addEventListener('click', pause);
 $('resumeBtn').addEventListener('click', resume);
 $('quitBtn').addEventListener('click', () => { show(null); sim.lives = 0; sim.over = true; endGame(); });
@@ -985,7 +1255,7 @@ function render(dt, T) {
 }
 
 resize();
-goMenu();
+runLoader();
 document.fonts && document.fonts.ready.then(() => { buildBackdrop(); });
 requestAnimationFrame(frame);
 })();

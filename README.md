@@ -16,14 +16,20 @@ The top players when the campaign ends win prizes.
 
 ## One-time setup (about 10 minutes)
 1. **Create the database.** Go to supabase.com → New project (region: Mumbai `ap-south-1`). Save the database password.
-2. **Create the tables.** Supabase → SQL Editor → New query → paste all of `supabase/schema.sql` → Run.
+2. **Create the tables.** Supabase → SQL Editor → New query → paste all of `supabase/schema.sql` → Run. Then do the same with `supabase/002_otp_email.sql` (email OTP, email log, verified-only leaderboard).
 3. **Copy the connection string.** Supabase → Connect (top bar) → *Transaction pooler* → copy the URI
    (it looks like `postgresql://postgres.xxxx:[YOUR-PASSWORD]@aws-0-ap-south-1.pooler.supabase.com:6543/postgres`)
    and put your database password in place of `[YOUR-PASSWORD]`.
-4. **Add 3 environment variables in Vercel** → Project → Settings → Environment Variables (Production):
+4. **Add environment variables in Vercel** → Project → Settings → Environment Variables (Production):
    - `DATABASE_URL` = the connection string from step 3
    - `TOKEN_SECRET` = any long random text (at least 32 characters). Keep it secret and don't change it during the campaign
    - `ADMIN_PASSWORD` = the password for `/admin`
+   - `ADMIN_PASSWORD_REQUIRED` = `1` to switch the admin password on (it is off while testing)
+   - `BREVO_API_KEY` = Brevo → SMTP & API → API keys (sends the OTP and thank-you emails)
+   - `EMAIL_FROM` = sender address on a domain verified in Brevo, e.g. `christmas@zopper.com`
+   - `EMAIL_FROM_NAME` = `Zopper Christmas Challenge` (optional)
+   - `GAME_URL` = the public game link, used in the email "Play again" button
+   - `KNOW_MORE_URL`, `TERMS_URL`, `CAMPAIGN_END` = links and closing date used in the emails
 5. **Redeploy** (Vercel → Deployments → ⋯ → Redeploy). Open the game, sign up, play one round, then check `/admin`.
 
 ## How scores are protected
@@ -42,3 +48,13 @@ If they decline, we store the approximate city from their network (Vercel IP loo
 ## Privacy
 The sign-up form asks for explicit consent to store name, email, mobile, scores and location for the contest.
 Export or delete the data when the campaign is over (Supabase → Table Editor, or the CSV export in `/admin`).
+
+## Player journey
+1. Scan QR → loading screen → intro page (how it works, prizes, Know more, Continue).
+2. Sign-up (name, email, mobile, consent) → 6-digit code emailed → verify → game home. Returning players on the same phone go straight to the home screen.
+3. New phone? "Log in" with the email they signed up with → code → their scores come back.
+4. After their first finished game, players get a thank-you email with their score and rank.
+Campaign text (prizes, dates, Know more / T&C links) is in the `CAMPAIGN` block near the top of the game script in `index.html`.
+
+## Email OTP rules
+Codes are 6 digits, valid 10 minutes, stored hashed. One code per email every 30 seconds, max 6 per hour per email and 30 per hour per network. 5 wrong tries cancels a code.

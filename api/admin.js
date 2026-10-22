@@ -8,7 +8,7 @@
 const { q, handler, readJson, send, requireAdmin, httpError } = require('./_lib');
 
 const PLAYER_COLS = `p.id, p.name, p.email, p.phone, p.best_score, p.best_at, p.games_played, p.total_score, p.created_at, p.last_seen_at,
-  p.city, p.region, p.country, p.ip_city, p.ip_region, p.lat, p.lng, p.location_accuracy_m, p.location_source, p.disqualified`;
+  p.city, p.region, p.country, p.ip_city, p.ip_region, p.lat, p.lng, p.location_accuracy_m, p.location_source, p.disqualified, p.verified_at, p.first_email_sent_at`;
 
 function page(u) {
   const limit = Math.min(500, Math.max(1, parseInt(u.searchParams.get('limit'), 10) || 50));
@@ -68,6 +68,20 @@ module.exports = handler(['GET', 'POST'], async (req, res) => {
   const u = new URL(req.url, 'http://x');
   const action = u.searchParams.get('action');
 
+  if (req.method === 'POST' && action === 'test-email') {
+    // Sends a sample OTP email and a sample thank-you email, to check delivery
+    const b = await readJson(req, 5_000);
+    const to = String(b.to || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(to)) throw httpError(400, 'Enter a valid email address');
+    const { sendEmail, otpEmail, thanksEmail } = require('./_email');
+    const out = {};
+    for (const [kind, msg] of [['otp', otpEmail({ name: b.name || 'Shreesh', code: '482913', purpose: 'signup' })],
+                               ['thanks', thanksEmail({ name: b.name || 'Shreesh', score: 868, best: 868, rank: 12, total: 140 })]]) {
+      try { const r = await sendEmail({ to, toName: b.name || '', ...msg, subject: '[TEST] ' + msg.subject, kind: 'test-' + kind }); out[kind] = r.status; }
+      catch (e) { out[kind] = 'failed: ' + e.message; }
+    }
+    return send(res, 200, out);
+  }
   if (req.method === 'POST') {
     if (action !== 'disqualify') throw httpError(400, 'Unknown action');
     const b = await readJson(req, 5_000);
