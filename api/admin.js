@@ -1,5 +1,6 @@
 // Admin API for the /admin dashboard. Every call needs the header  x-admin-key: <ADMIN_PASSWORD>
 //   GET  /api/admin?action=stats
+//   all lists accept &verified=all|yes|no (default all)
 //   GET  /api/admin?action=leaderboard&q=&limit=&offset=
 //   GET  /api/admin?action=players&q=&limit=&offset=
 //   GET  /api/admin?action=games&q=&flagged=1&player=<id>&limit=&offset=
@@ -23,29 +24,41 @@ function search(u, alias, params) {
   return ` and (${alias}.name ilike $${i} or ${alias}.email ilike $${i} or ${alias}.phone ilike $${i} or coalesce(${alias}.city, ${alias}.ip_city, '') ilike $${i})`;
 }
 
+function verifiedFilter(u, alias) {
+  const v = u.searchParams.get('verified');
+  if (v === 'yes') return ` and ${alias}.verified_at is not null`;
+  if (v === 'no') return ` and ${alias}.verified_at is null`;
+  return '';
+}
+
 async function listLeaderboard(u, all) {
   const params = [], where = search(u, 'p', params), { limit, offset } = page(u);
   const lim = all ? '' : ` limit ${limit} offset ${offset}`;
-  const rows = await q(`select p.rank, ${PLAYER_COLS} from leaderboard p where true${where} order by p.rank${lim}`, params);
-  const [{ n }] = await q(`select count(*)::int n from leaderboard p where true${where}`, params);
+  // positions are counted within the chosen group (all / verified / not verified); official_rank is the prize ranking (verified only)
+  const vf = verifiedFilter(u, 'p'), w = where.replace(/\bp\./g, 'r.');
+  const base = `with ranked as (select row_number() over (order by p.best_score desc, p.best_at asc nulls last) as rank, ${PLAYER_COLS}
+                  from players p where p.best_score > 0 and not p.disqualified${vf})`;
+  const rows = await q(`${base} select r.*, l.rank as official_rank from ranked r left join leaderboard l on l.id = r.id where true${w} order by r.rank${lim}`, params);
+  const [{ n }] = await q(`${base} select count(*)::int n from ranked r where true${w}`, params);
   return { rows, total: n };
 }
 async function listPlayers(u, all) {
   const params = [], where = search(u, 'p', params), { limit, offset } = page(u);
   const lim = all ? '' : ` limit ${limit} offset ${offset}`;
-  const rows = await q(`select l.rank, ${PLAYER_COLS} from players p left join leaderboard l on l.id = p.id where true${where} order by p.created_at desc${lim}`, params);
-  const [{ n }] = await q(`select count(*)::int n from players p where true${where}`, params);
+  const vf = verifiedFilter(u, 'p');
+  const rows = await q(`select l.rank, ${PLAYER_COLS} from players p left join leaderboard l on l.id = p.id where true${vf}${where} order by p.created_at desc${lim}`, params);
+  const [{ n }] = await q(`select count(*)::int n from players p where true${vf}${where}`, params);
   return { rows, total: n };
 }
 async function listGames(u, all) {
-  const params = []; let where = search(u, 'p', params);
+  const params = []; let where = search(u, 'p', params) + verifiedFilter(u, 'p');
   if (u.searchParams.get('flagged') === '1') where += ' and g.flagged';
   const pid = u.searchParams.get('player');
   if (pid && /^[0-9a-f-]{36}$/.test(pid)) { params.push(pid); where += ` and g.player_id = $${params.length}`; }
   const { limit, offset } = page(u);
   const lim = all ? '' : ` limit ${limit} offset ${offset}`;
   const rows = await q(`select g.id, g.created_at, g.score, g.client_score, g.duration_s, g.phones_caught, g.flagged, g.flag_reason,
-      g.city, g.ip_city, g.lat, g.lng, g.player_id, p.name, p.phone, p.email
+      g.city, g.ip_city, g.lat, g.lng, g.player_id, p.name, p.phone, p.email, p.verified_at
     from games g join players p on p.id = g.player_id where true${where} order by g.created_at desc${lim}`, params);
   const [{ n }] = await q(`select count(*)::int n from games g join players p on p.id = g.player_id where true${where}`, params);
   return { rows, total: n };

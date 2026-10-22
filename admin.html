@@ -78,6 +78,12 @@ main{display:flex;flex-direction:column;gap:18px;padding-block:18px 40px}
 .tab[aria-selected="true"]{background:var(--brand);color:var(--panel)}
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
 .toolbar input[type=search]{flex:1;min-width:200px;max-width:380px}
+.seg{display:inline-flex;background:var(--chip);border-radius:12px;padding:3px;gap:2px}
+.seg button{border:0;background:none;border-radius:9px;padding:7px 12px;font-weight:800;font-size:14px;cursor:pointer;color:var(--ink-2);white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.seg span{font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.tbl-note{margin:0 0 10px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.prize-rank{display:inline-block;margin-left:6px;font-size:12px;font-weight:800;color:var(--good)}
 .toolbar label{display:flex;gap:6px;align-items:center;font-weight:700;font-size:14px}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
 table{border-collapse:collapse;width:100%;font-size:14px}
@@ -133,11 +139,17 @@ a{color:var(--brand);font-weight:700}
         <button class="tab" role="tab" data-tab="games" aria-selected="false">Games</button>
       </div>
       <div class="toolbar">
+        <div class="seg" role="group" aria-label="Show players">
+          <button type="button" data-v="all" aria-pressed="true">All <span id="cAll"></span></button>
+          <button type="button" data-v="yes" aria-pressed="false">Verified <span id="cYes"></span></button>
+          <button type="button" data-v="no" aria-pressed="false">Not verified <span id="cNo"></span></button>
+        </div>
         <input type="search" id="search" placeholder="Search name, email, mobile or city" aria-label="Search">
         <label id="flagWrap" hidden><input type="checkbox" id="flagOnly"> Flagged only</label>
         <span id="playerFilter" hidden></span>
         <button class="btn" id="exportBtn">Export CSV</button>
       </div>
+      <p class="tbl-note" id="tblNote" hidden>Only verified players count for prizes. The prize rank is shown next to each verified player; unverified players are listed for reference only.</p>
       <div class="tablewrap"><table id="table"></table></div>
       <div class="pager"><span id="pageInfo"></span><button class="btn ghost" id="prevBtn">Previous</button><button class="btn ghost" id="nextBtn">Next</button></div>
     </section>
@@ -216,6 +228,7 @@ async function loadStats() {
     kpi('GPS location shared', gpsPct + '%', `${nf.format(s.located_gps)} of ${nf.format(s.players)} players`) +
     kpi('Emails sent', nf.format(s.emails_sent || 0), s.emails_failed ? `${nf.format(s.emails_failed)} failed` : `${nf.format(s.thanks_sent || 0)} thank-you emails`, s.emails_failed > 0) +
     kpi('Flagged games', nf.format(s.flagged_games), s.flagged_games ? 'Review in the Games tab' : 'Nothing suspicious', s.flagged_games > 0);
+  $('cAll').textContent = nf.format(s.players); $('cYes').textContent = nf.format(s.verified || 0); $('cNo').textContent = nf.format(s.players - (s.verified || 0));
   barChart($('chPlayers'), s.by_day, 'players', 'Players');
   barChart($('chGames'), s.by_day, 'games', 'Games');
   const max = Math.max(1, ...s.by_city.map(c => c.players));
@@ -227,7 +240,7 @@ async function loadStats() {
 
 /* ---------- table ---------- */
 const LIMIT = 50;
-let tab = 'leaderboard', offset = 0, total = 0, playerId = null, playerLabel = '';
+let verified = 'all', tab = 'leaderboard', offset = 0, total = 0, playerId = null, playerLabel = '';
 const loc = r => {
   const city = r.city || r.ip_city || '';
   const src = r.location_source === 'gps' ? '<span class="pill gps">GPS</span>' : '<span class="pill net">Network</span>';
@@ -235,11 +248,11 @@ const loc = r => {
   return `${esc(city)} ${city || r.lat != null ? src : ''}${map}`;
 };
 const COLS = {
-  leaderboard: [['Rank', r => `<span class="rank">${r.rank}</span>`, 'num'], ['Name', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Email', r => esc(r.email) + (r.verified_at ? ' <span class="pill gps" title="Email verified">Verified</span>' : ' <span class="pill net">Not verified</span>')],
+  leaderboard: [['#', r => `<span class="rank">${r.rank}</span>`, 'num'], ['Prize rank', r => r.official_rank ? `<span class="prize-rank">#${r.official_rank}</span>` : '<span class="pill net">–</span>', 'num'], ['Name', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Email', r => esc(r.email) + (r.verified_at ? ' <span class="pill gps" title="Email verified">Verified</span>' : ' <span class="pill net">Not verified</span>')],
     ['Best', r => nf.format(r.best_score), 'num'], ['Reached', r => dt(r.best_at)], ['Games', r => r.games_played, 'num'], ['Location', loc], ['', actions, 'act']],
   players: [['Joined', r => dt(r.created_at)], ['Name', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Email', r => esc(r.email) + (r.verified_at ? ' <span class="pill gps">Verified</span>' : ' <span class="pill net">Not verified</span>')], ['Thank-you email', r => r.first_email_sent_at ? 'Sent ' + dt(r.first_email_sent_at) : '–'],
     ['Best', r => nf.format(r.best_score), 'num'], ['Rank', r => r.rank || '–', 'num'], ['Games', r => r.games_played, 'num'], ['Last played', r => dt(r.last_seen_at)], ['Location', loc], ['', actions, 'act']],
-  games: [['When', r => dt(r.created_at)], ['Player', r => esc(r.name)], ['Mobile', r => esc(r.phone)], ['Score', r => nf.format(r.score), 'num'],
+  games: [['When', r => dt(r.created_at)], ['Player', r => esc(r.name) + (r.verified_at ? '' : ' <span class="pill net">Not verified</span>')], ['Mobile', r => esc(r.phone)], ['Score', r => nf.format(r.score), 'num'],
     ['Length', r => r.duration_s != null ? Math.round(r.duration_s) + 's' : '', 'num'], ['Phones caught', r => r.phones_caught, 'num'],
     ['Check', r => r.flagged ? `<span class="pill flag" title="${esc(r.flag_reason)}">Flagged</span>` : (r.flag_reason ? `<span class="pill net" title="${esc(r.flag_reason)}">Note</span>` : 'OK')],
     ['Location', r => esc(r.city || r.ip_city || '') + (r.lat != null ? ` <a href="https://www.google.com/maps?q=${r.lat},${r.lng}" target="_blank" rel="noopener">Map</a>` : '')]],
@@ -249,7 +262,7 @@ function actions(r) {
     (r.disqualified ? `<button class="linkbtn" data-dq="${r.id}" data-v="0">Reinstate</button>` : `<button class="linkbtn danger" data-dq="${r.id}" data-v="1">Disqualify</button>`);
 }
 function qsFor(extra) {
-  const p = new URLSearchParams({ action: tab, limit: LIMIT, offset, q: $('search').value.trim() });
+  const p = new URLSearchParams({ action: tab, limit: LIMIT, offset, q: $('search').value.trim(), verified });
   if (tab === 'games' && $('flagOnly').checked) p.set('flagged', '1');
   if (tab === 'games' && playerId) p.set('player', playerId);
   for (const k in extra || {}) p.set(k, extra[k]);
@@ -258,6 +271,7 @@ function qsFor(extra) {
 async function loadTable() {
   const cols = COLS[tab];
   $('flagWrap').hidden = tab !== 'games';
+  $('tblNote').hidden = !(tab === 'leaderboard' && verified !== 'yes');
   $('playerFilter').hidden = !(tab === 'games' && playerId);
   if (playerId) $('playerFilter').innerHTML = `Showing games for <b>${esc(playerLabel)}</b> <button class="linkbtn" id="clearPlayer">Show all</button>`;
   const d = await call(qsFor());
@@ -273,6 +287,10 @@ document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () =>
   tab = b.dataset.tab; offset = 0; if (tab !== 'games') playerId = null; loadTable();
 }));
 let st; $('search').addEventListener('input', () => { clearTimeout(st); st = setTimeout(() => { offset = 0; loadTable(); }, 300); });
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+  verified = b.dataset.v; document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  offset = 0; loadTable();
+}));
 $('flagOnly').addEventListener('change', () => { offset = 0; loadTable(); });
 $('prevBtn').addEventListener('click', () => { offset = Math.max(0, offset - LIMIT); loadTable(); });
 $('nextBtn').addEventListener('click', () => { offset += LIMIT; loadTable(); });
